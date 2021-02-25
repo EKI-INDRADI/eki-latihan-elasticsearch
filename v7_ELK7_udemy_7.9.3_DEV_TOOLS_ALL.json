@@ -1,0 +1,102 @@
+PUT /blogsposts/_doc/1
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+GET /blogsposts/_doc/1
+
+HEAD /blogsposts/_doc/1
+
+HEAD /blogsposts/_doc/15
+
+POST /blogsposts/_doc/
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+GET /blogsposts/_doc/f0QAYXcByloy1LqeOZy1
+
+
+PUT /blogsposts/_doc/1
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+
+
+
+POST /blogsposts/_update/1
+{
+  "doc" : { "title" : "Elasticsearch indroduction",
+            "no_of_likes" : 2}
+}
+
+
+PUT /blogsposts/_doc/2
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+
+DELETE /blogsposts/_doc/2
+
+PUT /blogsposts2
+
+DELETE /blogsposts2
+
+
+
+PUT /blogposts_belajar_bulk
+
+GET /blogposts_belajar_bulk 
+
+GET /blogposts_belajar_bulk/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+POST _bulk
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "1"}}
+{ "title" : "indroduction to elastichsearch", "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .", "published_date" : "2020-01-02","tags" : ["elasticsearch","distributed","storage"]}
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "2"}}
+{ "title" : "indroduction the new React Devtools", "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", "published_date" : "2019-08-25", "tags" : ["react", "devtools"]}
+{"update" : {"_id": "1", "_index" : "blogposts_belajar_bulk"}}
+{"doc" : {"title" : "Overview of elasticsearch"}}
+{"delete" : {"_index": "blogposts_belajar_bulk", "_id" : "2" }}
+
+
+
+
+
+
+POST _bulk
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "1"}}
+{ "title" : "indroduction to elasticsearch","content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .","published_date" : "2020-01-02","tags" : ["elasticsearch","distributed","storage"],"no_of_likes" : 21,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "2"}}
+{ "title" : "why is elasticsearch fast?","content" : "it is able to archive fast search because, instead of searching the text directly, it searches an ...","published_date" : "2020-01-02","tags" : ["elasticsearch","fast","index"],"no_of_likes" : 10,"status" : "draft"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "3"}}
+{ "title" : "indroduction the new React Devtools", "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", "published_date" : "2019-08-25", "tags" : ["react", "devtools"],     "no_of_likes" : 21,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "4"}}
+{ "title" : "Angular Tools for High Performance","content" : "This post, contains a list of new tools and practices that can help us build faster Angular apps and monitor their performance over time", "published_date" : "2014-03-22", "tags" : ["angular", "performance", "fast"],"no_of_likes" : 35,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "5"}}
+{ "title" : "The new features in java 14","content" : "Oracle on september 17 said switch expressions are expected to go final in java Development Kit 14", "published_date" : "2019-07-20", "tags" : ["java"],"no_of_likes" : 11,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "6"}}
+{ "title" : "Thread behavior in the JVM","content" : "Threading refers to thepractice of executing programing processes concurrently to imporve application performance.", "published_date" : "2019-07-20", "tags" : ["java","jvm"],"no_of_likes" : 3,"status" : "draft"}
+
+
+    

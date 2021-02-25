@@ -1,0 +1,642 @@
+ELK 7.9.3
+
+
+//========================== ELASTICSEARCH
+
+https://www.udemy.com/course/elasticsearch-masterclass/learn/lecture/18127643#overview
+
+ssh crypt@192.168.1.109 -p 22
+masuk123
+
+sudo -i
+
+apt-get update
+
+
+sudo useradd -m esuser << bkin account + home dir
+sudo usermod -s /bin/bash esuser  << biar bs login
+usermod -a -Gsudo esuser  << enable root
+sudo passwd esuser << ubah pass
+masuk123
+
+
+exit
+
+su esuser 
+
+cd /home/esuser && wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.3-linux-x86_64.tar.gz && \
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.9.3-linux-x86_64.tar.gz.sha512
+
+shasum -a 512 -c elasticsearch-7.9.3-linux-x86_64.tar.gz.sha512
+tar -xzvf elasticsearch-7.9.3-linux-x86_64.tar.gz
+
+mv elasticsearch-7.9.3 ES_7.9.3_node1
+
+cp -avr /home/esuser/ES_7.9.3_node1/config/elasticsearch.yml /home/esuser/ES_7.9.3_node1/config/elasticsearch.yml-origin
+
+nano /home/esuser/ES_7.9.3_node1/config/elasticsearch.yml
+cluster.name: eki-cluster
+node.name: node-1
+network.host: 0.0.0.0
+http.port: 9201
+discovery.seed_hosts: ["127.0.0.1"]
+cluster.initial_master_nodes: ["node-1"]
+
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+/home/esuser/ES_7.9.3_node1/bin/elasticsearch 	
+
+
+cp -avr /home/esuser/ES_7.9.3_node1/config/elasticsearch.yml /home/esuser/ES_7.9.3_node1/config/elasticsearch.yml-0.0.0.0
+
+
+
+
+
+netstat -plnt
+//========================== / ELASTICSEARCH
+
+//========================== KIBANA
+
+cd /home/esuser && wget https://artifacts.elastic.co/downloads/kibana/kibana-7.9.3-linux-x86_64.tar.gz && \
+wget https://artifacts.elastic.co/downloads/kibana/kibana-7.9.3-linux-x86_64.tar.gz.sha512
+
+shasum -a 512 -c kibana-7.9.3-linux-x86_64.tar.gz.sha512
+tar -xzvf kibana-7.9.3-linux-x86_64.tar.gz
+
+mv kibana-7.9.3-linux-x86_64 KBN_7.9.3
+
+cp -avr /home/esuser/KBN_7.9.3/config/kibana.yml /home/esuser/KBN_7.9.3/config/kibana.yml-origin
+
+nano /home/esuser/KBN_7.9.3/config/kibana.yml
+server.port: 5601
+server.host: "0.0.0.0"
+elasticsearch.hosts: ["http://localhost:9201"]
+
+cp -avr /home/esuser/KBN_7.9.3/config/kibana.yml /home/esuser/KBN_7.9.3/config/kibana.yml-0.0.0.0
+
+/home/esuser/KBN_7.9.3/bin/kibana
+
+
+
+//========================== NOT USED
+ log   [08:50:43.931] [error][plugins][reporting][validations] The Reporting plugin encountered issues launching Chromium in a self-test. You may have trouble generating reports.
+  log   [08:50:43.941] [error][plugins][reporting][validations] Error: Failed to launch chrome!
+/home/esuser/KBN_7.9.3/x-pack/plugins/reporting/chromium/headless_shell-linux/headless_shell: error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
+
+
+TROUBLESHOOTING: https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md
+
+
+https://discuss.elastic.co/t/kibana-reporting-plugin-fails-to-launch-chrome-puppeteer/236195/4
+
+--- not use
+curl -sL 'https://unofficial-builds.nodejs.org/download/release/v12.16.3/node-v12.16.3-linux-x86.tar.xz' | xzcat | tar -vx --strip-components=1 -C /usr/local/
+--- not use
+
+
+
+--- use
+https://nodejs.org/en/download/
+https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz
+
+curl -sL 'https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz' | xzcat | tar -vx --strip-components=1 -C /usr/local/
+node -v
+---  use
+
+
+cd /home/esuser/KBN_7.9.3/x-pack
+
+//========================== / NOT USED
+
+
+
+//===============kibana solved ============
+https://discuss.elastic.co/t/kibana-upgrade-to-7-3-error/195216/3
+https://www.elastic.co/guide/en/kibana/current/reporting-troubleshooting.html
+https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md
+
+/home/esuser/KBN_7.9.3/bin/kibana
+
+
+Guide : https://www.elastic.co/guide/en/kibana/current/reporting-troubleshooting.html
+sudo -i
+apt-get update
+apt-get install fonts-liberation
+apt-get install libfontconfig1
+
+chmod 777 -Rv /home/esuser/KBN_7.9.3/x-pack/plugins/reporting/chromium/headless_shell-linux/headless_shell
+
+Guide : https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md
+apt-get install libnss3 
+
+---- OPTIONAL---- 
+apt-get install \
+ca-certificates  && \
+fonts-liberation  && \
+libappindicator3-1  && \
+libasound2  && \
+libatk-bridge2.0-0  && \
+libatk1.0-0  && \
+libc6   && \
+libcairo2   && \
+libcups2   && \
+libdbus-1-3   && \
+libexpat1   && \
+libfontconfig1   && \
+libgbm1   && \
+libgcc1   && \
+libglib2.0-0   && \
+libgtk-3-0   && \
+libnspr4   && \
+libnss3   && \
+libpango-1.0-0   && \
+libpangocairo-1.0-0   && \
+libstdc++6   && \
+libx11-6   && \
+libx11-xcb1   && \
+libxcb1   && \
+libxcomposite1   && \
+libxcursor1   && \
+libxdamage1   && \
+libxext6   && \
+libxfixes3   && \
+libxi6   && \
+libxrandr2   && \
+libxrender1   && \
+libxss1   && \
+libxtst6   && \
+lsb-release   && \
+wget   && \
+xdg-utils   
+---- / OPTIONAL---- 
+
+http://192.168.1.103:5601/
+
+explore on my own
+
+
+dev tools  ( miirp  postman )
+
+
+//=============== /kibana solved ============
+
+
+
+
+//=============== / ELASTIC SEARCH - KIBANA DEV TOOLS ============
+// ELASTIC QUERY (JSON) 
+http://192.168.1.103:5601/
+
+explore on my own
+
+
+dev tools  ( miirp  postman / CURL )
+
+
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+REQUEST1-------------------------
+PUT /blogsposts/_doc/1
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+------------------------
+
+RESPONSE1-------------------------
+
+{
+  "_index" : "blogsposts",
+  "_type" : "_doc",
+  "_id" : "1",
+  "_version" : 1,
+  "result" : "created",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 0,
+  "_primary_term" : 1
+}
+-------------------------
+
+
+
+REQUEST2-------------------------
+GET /blogsposts/_doc/1
+-------------------------
+
+
+RESPONSE2-------------------------
+{
+  "_index" : "blogsposts",
+  "_type" : "_doc",
+  "_id" : "1",
+  "_version" : 1,
+  "_seq_no" : 0,
+  "_primary_term" : 1,
+  "found" : true,
+  "_source" : {
+    "title" : "indroduction",
+    "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+    "published_date" : "2020-01-02",
+    "tags" : [
+      "elasticsearch",
+      "distributed",
+      "storage"
+    ]
+  }
+}
+-------------------------
+
+
+
+ada gambar <|  dan gambar kunci tang  , 
+gambar <| untuk running query di setiap codingan , 
+kunci tang untuk copy CURL format (otomatis akan di buatkan)
+
+
+
+contoh kunci tang :  
+curl -XPUT "http://localhost:9201/blogsposts/_doc/1" -H 'Content-Type: application/json' -d'{"title" : "indroduction","content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .","published_date" : "2020-01-02","tags" : ["elasticsearch","distributed","storage"]}'
+
+curl -XGET "http://localhost:9201/blogsposts/_doc/1"
+
+
+untuk memperbaikin request curl agar tampilan bagus menggunakan
+
+curl -XGET "http://localhost:9201/blogsposts/_doc/1?pretty"
+
+pada kibana dev tools semua request dapat di gabung dan di eksekusi 1-1 (manual sesuai pilihan) , lebih simple dari postman
+
+
+----
+untuk memastikan tersedia atau tidak menggunakan head request
+HEAD /<index>/<type>/<id>
+
+
+REQUEST3-------------------------
+HEAD /blogsposts/_doc/1
+-------------------------
+RESPONSE3-------------------------
+200 - OK
+-------------------------
+
+
+REQUEST4-------------------------
+HEAD /blogsposts/_doc/15
+-------------------------
+RESPONSE4-------------------------
+{"statusCode":404,"error":"Not Found","message":"404 - Not Found"}
+-------------------------
+
+
+REQUEST5-------------------------
+PUT /blogsposts/_doc/
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+------------------------
+
+RESPONSE5-------------------------
+{
+  "error" : "Incorrect HTTP method for uri [/blogsposts/_doc/?pretty=true] and method [PUT], allowed: [POST]",
+  "status" : 405
+}
+-------------------------
+
+
+solusi dari request5 ADALAH RESPONSE 6
+"<index>/<type>/<id>"
+elasticsearch  harus menggunakan id unik untuk  input data baru
+
+pada request 6 membuat autogenerated id yang di ciptakan oleh elasticsearch
+sendiri
+
+REQUEST6-------------------------
+PUT /blogsposts/_doc/
+{
+"title" : "Autogerenerate ID"
+}
+-------------------------
+
+RESPONSE6-------------------------
+{
+  "_index" : "blogsposts",
+  "_type" : "_doc",
+  "_id" : "f0QAYXcByloy1LqeOZy1",
+  "_version" : 1,
+  "result" : "created",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 1,
+  "_primary_term" : 1
+}
+-------------------------
+
+
+REQUEST7-------------------------
+GET /blogsposts/_doc/f0QAYXcByloy1LqeOZy1
+-------------------------
+
+RESPONSE7-------------------------
+{
+  "_index" : "blogsposts",
+  "_type" : "_doc",
+  "_id" : "f0QAYXcByloy1LqeOZy1",
+  "_version" : 1,
+  "_seq_no" : 1,
+  "_primary_term" : 1,
+  "found" : true,
+  "_source" : {
+    "title" : "indroduction",
+    "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+    "published_date" : "2020-01-02",
+    "tags" : [
+      "elasticsearch",
+      "distributed",
+      "storage"
+    ]
+  }
+}
+-------------------------
+
+
+setiap versi dari response,  versi akan berubah jika melakukan PUT  pada document yang sama
+
+put bersifat full update ( bukan partial update) , sudah pernah di jelaskan di programmer zamanow
+
+
+PUT = delete -> insert (version berubah)
+
+POST update = update partial  (version tidak berubah)
+
+REQUEST8-------------------------
+POST /blogsposts/_update/1
+{
+  "doc" : { "title" : "Elasticsearch indroduction",
+            "no_of_likes" : 2}
+}
+-------------------------
+
+RESPONSE8-------------------------
+{
+  "_index" : "blogsposts",
+  "_type" : "_doc",
+  "_id" : "1",
+  "_version" : 4,
+  "result" : "noop",
+  "_shards" : {
+    "total" : 0,
+    "successful" : 0,
+    "failed" : 0
+  },
+  "_seq_no" : 4,
+  "_primary_term" : 1
+}
+-------------------------
+
+
+REQUEST9-------------------------
+GET /blogsposts/_doc/1
+-------------------------
+RESPONSE9-------------------------
+{
+  "_index" : "blogsposts",
+  "_type" : "_doc",
+  "_id" : "1",
+  "_version" : 4,
+  "_seq_no" : 4,
+  "_primary_term" : 1,
+  "found" : true,
+  "_source" : {
+    "title" : "Elasticsearch indroduction",
+    "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+    "published_date" : "2020-01-02",
+    "tags" : [
+      "elasticsearch",
+      "distributed",
+      "storage"
+    ],
+    "no_of_likes" : 2
+  }
+}
+
+-------------------------
+
+REQUEST10-------------------------
+
+PUT /blogsposts/_doc/2
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+
+DELETE /blogsposts/_doc/2
+-------------------------
+
+
+
+
+RESPONSE10-------------------------
+{
+  "_index" : "blogsposts",
+  "_type" : "_doc",
+  "_id" : "2",
+  "_version" : 2,
+  "result" : "deleted",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 6,
+  "_primary_term" : 1
+}
+
+-------------------------
+
+
+
+
+REQUEST11------------------------
+PUT /blogsposts2   
+-------------------------
+
+RESPONSE11------------------------
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "blogsposts2"
+}
+-------------------------
+
+
+REQUEST12------------------------
+DELETE /blogsposts2
+-------------------------
+
+RESPONSE12------------------------
+{
+  "acknowledged" : true
+}
+-------------------------
+
+//=========== _BULK ===========
+
+REQUEST13------------------------
+
+----- get data
+PUT /blogposts_belajar_bulk
+GET /blogposts_belajar_bulk
+
+GET /blogposts_belajar_bulk/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+GET _search/blogposts_belajar_bulk
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+GET /blogposts_belajar_bulk/_doc/1
+
+----- / get data
+
+
+PASTIKAN JANGAN ENTER2 FORMATNYA, akan gagal di insert
+
+POST _bulk
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "1"}}
+{ "title" : "indroduction to elastichsearch", "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .", "published_date" : "2020-01-02","tags" : ["elasticsearch","distributed","storage"]}
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "2"}}
+{ "title" : "indroduction the new React Devtools", "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", "published_date" : "2019-08-25", "tags" : ["react", "devtools"]}
+{"update" : {"_id": "1", "_index" : "blogposts_belajar_bulk"}}
+{"doc" : {"title" : "Overview of elasticsearch"}}
+{"delete" : {"_index": "blogposts_belajar_bulk", "_id" : "2" }}
+------------------------
+
+
+RESPONSE13------------------------
+{
+  "took" : 198,
+  "errors" : false,
+  "items" : [
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_version" : 1,
+        "result" : "created",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 0,
+        "_primary_term" : 1,
+        "status" : 201
+      }
+    },
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk",
+        "_type" : "_doc",
+        "_id" : "2",
+        "_version" : 1,
+        "result" : "created",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 1,
+        "_primary_term" : 1,
+        "status" : 201
+      }
+    },
+    {
+      "update" : {
+        "_index" : "blogposts_belajar_bulk",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_version" : 2,
+        "result" : "updated",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 2,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    },
+    {
+      "delete" : {
+        "_index" : "blogposts_belajar_bulk",
+        "_type" : "_doc",
+        "_id" : "2",
+        "_version" : 2,
+        "result" : "deleted",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 3,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    }
+  ]
+}
+
+------------------------
+
+//=========== / _BULK ===========
+
+
+
+
+HEAD STATUS
+
+
+Create PUT request success status code 201
+Update/Delete (POST/DELETE) reuqest sucesss status code 200
+
+
+
+//=============== / ELASTIC SEARCH - KIBANA DEV TOOLS ============
+
+
+
+//========================== / KIBANA

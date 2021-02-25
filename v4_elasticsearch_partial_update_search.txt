@@ -1,0 +1,736 @@
+================= PARTIAL UPDATE ============================
+
+perbedaan update index api 
+(misal hanya update nama saja mka yang di update hanya nama)
+(haruss full payload json nya)
+
+
+partial data update document  
+
+partial update 
+menggunakan bahasa : painless scripting language
+
+(update hanya sebagian data) 
+(misal hanya update nama saja mka yang di update hanya nama)
+
+POST /index_name/_update/1
+{
+  "doc" : {
+"frist_name" : "asd"
+   }
+}
+
+
+
+==== example ====================================
+
+insert
+PUT http://192.168.100.37:9201/belajar/_doc/7
+{
+	"frist_name" : "Eki",
+	"last_name" :  "indradi",
+	"address" : {"country" : "Indonesia",
+		         "city" : "Jakarta"},
+	"hoby" : ["game", "coding", "server", "network", "data", "traveling"]
+}
+
+
+GET http://192.168.100.37:9201/belajar/_doc/7
+
+
+partial update
+
+POST http://192.168.100.37:9201/belajar/_update/7
+{
+  "doc" : {
+      "frist_name" : "frist_asd",
+      "last_name" : "last_asd"
+   }
+}
+
+result
+
+{
+    "_index": "belajar",
+    "_type": "_doc",
+    "_id": "7",
+    "_version": 2,
+    "result": "updated",
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "failed": 0
+    },
+    "_seq_no": 4,
+    "_primary_term": 1
+}
+
+
+GET http://192.168.100.37:9201/belajar/_doc/7
+
+
+{
+    "_index": "belajar",
+    "_type": "_doc",
+    "_id": "7",
+    "_version": 2,
+    "_seq_no": 4,
+    "_primary_term": 1,
+    "found": true,
+    "_source": {
+        "frist_name": "frist_asd",
+        "last_name": "last_asd",
+        "address": {
+            "country": "Indonesia",
+            "city": "Jakarta"
+        },
+        "hoby": [
+            "game",
+            "coding",
+            "server",
+            "network",
+            "data",
+            "traveling"
+        ]
+    }
+}
+
+
+
+pada kondisi partial update  dia tidak melakuakn insert lalu delete data seperti update pada index api   = imutable = tidak bisa dirubah
+tetapi untuk update api, dia langsung merubah data dari document nya = mutable = bisa dirubah
+
+http://192.168.100.37:9201/_cat/indices?v
+
+
+
+maka hasil dari update 
+==== / example ====================================
+================= / PARTIAL UPDATE ============================
+
+================= SEARCH ============================
+
+http://192.168.100.37:9201/_search   (semua index keluar)
+http://192.168.100.37:9201/belajar/_search    (hanya speisifik index) 
+http://192.168.100.37:9201/belajar_elasticsearch/_search  
+
+==== Search dengan query
+https://www.elastic.co/guide/en/elasticsearch/reference/7.1/query-dsl-match-query.html
+
+GET/POST 
+
+{
+    "query": {
+        "match" : {
+            "message" : {
+                "query" : "this is a test"
+            }
+        }
+    }
+}
+
+menggunakan body json
+
+
+
+GET/POST  http://192.168.100.37:9201/belajar/_search
+{
+    "query": {
+        "match" : {
+              "frist_name": "Eki"
+        }       
+    }
+}
+
+
+
+
+
+GET/POST  http://192.168.100.37:9201/belajar/_search
+{
+    "query": {
+        "match" : {
+              "frist_name": "Eki"
+        }       
+    }
+}
+
+
+
+search dlm multi object
+GET/POST  http://192.168.100.37:9201/belajar/_search
+{
+    "query": {
+        "match" : {
+              "address.city": "Jakarta"
+        }       
+    }
+}
+
+
+search dlm array
+GET/POST  http://192.168.100.37:9201/belajar/_search
+{
+    "query": {
+        "match" : {
+              "hoby": "coding"
+        }       
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.elastic.co/guide/en/elasticsearch/reference/7.1/query-dsl-match-query.html
+
+bool query
+-  must = kombinasi  fristname a and lstname =b
+- filter = 
+- should = or
+- must_not = 
+
+
+
+search bool (must)
+GET/POST  http://192.168.100.37:9201/belajar/_search
+{
+    "query": {
+        "bool" : {
+            "must": {
+                 "match" : { 
+                     "frist_name": "ara"
+                  } 
+             }   
+        }   
+    }
+}
+
+
+
+search bool multi match (must)   AND
+GET/POST  http://192.168.100.37:9201/belajar/_search
+{
+    "query": {
+        "bool" : {
+            "must": [
+                  { 
+                     "match" : { 
+                     "frist_name": "ara"}
+                  },
+                  { 
+                     "match" : { 
+                     "address.city": "Cirebon"}
+                  }
+             ]   
+        }   
+    }
+}
+
+
+
+
+
+
+search bool yang bukan  (must_not) 
+GET/POST  http://192.168.100.37:9201/belajar/_search
+------------------------------------------------
+(ok)
+{
+    "query": {
+        "bool" : {
+            "must_not": {
+                 "match" : { 
+                     "frist_name": "ara"
+                  } 
+             }   
+        }   
+    }
+}
+
+------------------------------------------------
+(ok)
+{
+    "query": {
+        "bool" : {
+            "must_not": {
+                 "match" : { 
+                     "address.city": "Cirebon"
+                  } 
+             }   
+        }   
+    }
+}
+------------------------------------------------
+not used
+{
+    "query": {
+        "bool" : {
+            "must_not": {
+              "wildcard": {
+                     "first_name": "*Eki*"
+                  } 
+             }   
+        }   
+    }
+}
+------------------------------------------------
+
+
+
+
+
+search bool multi match (should)   OR
+GET/POST  http://192.168.100.37:9201/belajar/_search
+{
+    "query": {
+        "bool" : {
+            "should": [
+                  { 
+                     "match" : { 
+                     "frist_name": "ara"}
+                  },
+                  { 
+                     "match" : { 
+                     "frist_name": "Eki"}
+                  }
+             ]   
+        }   
+    }
+}
+
+
+
+
+
+---------- kobinasi
+
+
+search bool (must,must_not,should)   OR
+GET/POST  http://192.168.100.37:9201/belajar/_search
+
+need fix
+{
+    "query": {
+        "bool" : [
+                 { "must":   [ 
+                                { "match" : { "address.city": "Cirebon"} }
+                             ]
+                 },
+                 { "should": [ 
+                                { "match" : {  "frist_name": "ara"} },
+                                { "match" : {  "frist_name": "Eki"} }  
+                             ]   
+                 } ,
+                 { "must_not":   [ 
+                                { "match" : { "hoby": "makan"} }
+                             ]
+                 },
+                 ]
+  
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+================= / SEARCH ============================
+
+
+
+================= AGGREGATE ============================
+
+bucketing = grouping dari searching cth: group by category dll
+metrics = bikin group base on metrics  cth : avg , min, max , dll
+matrix = blm status
+pipeline = bikin agregat dari agregat
+
+
+contoh agregation di toko online
+
+ketika cari barang
+maka di sebelah kiri ada tag / categori dri pencarian
+nah itu yang di sebut agregation
+
+
+agregation yg basic contohnya  term
+
+
+term = mirip seperti = grouping
+https://www.elastic.co/guide/en/elasticsearch/reference/7.1/search-aggregations-bucket-terms-aggregation.html
+
+di elastic search cara agregat berbeda dengan elastic 6.X , di elastic search 7.x tipe data text tidak bisa di buat agregat
+
+di versi elastic 6.X
+
+{
+    "query": {
+        "bool" : { "must": [ ] }
+    },
+    "aggs" : {
+        "hobbies" : {
+             "terms" : {
+                  "field" : "hoby"
+              }
+        }
+    }
+}
+
+
+di elastik 7 cara cek filednya mengunakan mapping untuk agregat nya
+
+http://192.168.100.37:9201/belajar/_mapping
+
+terdapat  keyword --------
+
+ "hoby": {
+                    "type": "text",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword",
+                            "ignore_above": 256
+                        }
+                    }
+          },
+
+
+dari data di atas 
+hoby biasa format text
+hoby.keyword artinya keyword
+
+/ terdapat  keyword --------
+
+
+jadi cara aggregatnya di versi 7
+
+
+{
+    "query": {
+        "bool" : { "must": [ ] }
+    },
+    "aggs" : {
+        "hobbies" : {
+             "terms" : {
+                  "field" : "hoby.keyword"
+              }
+        }
+    }
+}
+
+
+hasilnya :
+ . . . . 
+    "aggregations": {
+        "hobbies": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "coding",
+                    "doc_count": 5
+                },
+                {
+                    "key": "data",
+                    "doc_count": 5
+                },
+                {
+                    "key": "game",
+                    "doc_count": 5
+                },
+                {
+                    "key": "network",
+                    "doc_count": 5
+                },
+                {
+                    "key": "server",
+                    "doc_count": 5
+                },
+                {
+                    "key": "traveling",
+                    "doc_count": 5
+                }
+            ]
+        }
+    }
+}
+
+
+contoh 2 agregat di versi 7
+
+
+{
+    "query": {
+        "bool" : { "must": [ ] }
+    },
+    "aggs" : {
+        "Hobbies" : {
+             "terms" : {
+                  "field" : "hoby.keyword"
+              }
+        },
+        "Country" : {
+             "terms" : {
+                  "field" : "address.country.keyword"
+              }
+        }
+    }
+}
+
+
+hasilnya :
+ . . . . 
+    "aggregations": {
+        "Country": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "Indonesia",
+                    "doc_count": 5
+                }
+            ]
+        },
+        "Hobbies": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+                {
+                    "key": "coding",
+                    "doc_count": 5
+                },
+                {
+                    "key": "data",
+                    "doc_count": 5
+                },
+                {
+                    "key": "game",
+                    "doc_count": 5
+                },
+                {
+                    "key": "network",
+                    "doc_count": 5
+                },
+                {
+                    "key": "server",
+                    "doc_count": 5
+                },
+                {
+                    "key": "traveling",
+                    "doc_count": 5
+                }
+            ]
+        }
+    }
+}
+
+
+
+
+================= / AGGREGATE ============================
+
+================= CLUSTER HEALTH ============================
+https://www.elastic.co/guide/en/elasticsearch/reference/7.1/cluster-health.html
+http://192.168.100.37:9201/_cluster/health
+http://192.168.100.37:9202/_cluster/health
+http://192.168.100.37:9203/_cluster/health
+
+cluster 
+- green = semua partisi dan primary teralokasi dengan baik = sistem normal
+- yellow = ada node yang down tetapi replicate dari node yg lain membantu = sistem tetap berjalan
+- red = ada replicate/primary (node) yang tidak teralokasi ke cluster  (backup replicate/primary tidak dapat backup node/shard tsb)  
+        biasanya terjadi ketika banyak node sercara bersamaan yang down =  akibatnya elastic cluster tiadk menyala
+
+List index (primary & replicate)
+http://192.168.100.37:9201/_cat/indices?v
+
+
+node adalah tempat tampung dari shard(primary) dan replicate
+
+partisi = jumlah shard
+shard = primary
+primary = adalah data utama
+repliate = data backup
+
+
+contoh  
+http://192.168.100.37:9201/_cat/shards?v
+
+index                 shard prirep state   docs  store ip             node
+belajar_elasticsearch 3     p      STARTED    0   283b 192.168.100.37 node-2
+belajar_elasticsearch 3     r      STARTED    0   283b 192.168.100.37 node-3
+belajar_elasticsearch 3     r      STARTED    0   283b 192.168.100.37 node-1
+belajar_elasticsearch 2     r      STARTED    0   283b 192.168.100.37 node-2
+belajar_elasticsearch 2     p      STARTED    0   283b 192.168.100.37 node-3
+belajar_elasticsearch 2     r      STARTED    0   283b 192.168.100.37 node-1
+belajar_elasticsearch 1     r      STARTED    0   283b 192.168.100.37 node-2
+belajar_elasticsearch 1     r      STARTED    0   283b 192.168.100.37 node-3
+belajar_elasticsearch 1     p      STARTED    0   283b 192.168.100.37 node-1
+belajar_elasticsearch 4     r      STARTED    0   283b 192.168.100.37 node-2
+belajar_elasticsearch 4     r      STARTED    0   283b 192.168.100.37 node-3
+belajar_elasticsearch 4     p      STARTED    0   283b 192.168.100.37 node-1
+belajar_elasticsearch 0     p      STARTED    0   283b 192.168.100.37 node-2
+belajar_elasticsearch 0     r      STARTED    0   283b 192.168.100.37 node-3
+belajar_elasticsearch 0     r      STARTED    0   283b 192.168.100.37 node-1
+belajar               2     p      STARTED    1  9.5kb 192.168.100.37 node-3
+belajar               2     r      STARTED    1  9.5kb 192.168.100.37 node-1
+belajar               1     r      STARTED    3 12.4kb 192.168.100.37 node-2
+belajar               1     p      STARTED    3 12.4kb 192.168.100.37 node-1
+belajar               0     p      STARTED    1  6.3kb 192.168.100.37 node-2
+belajar               0     r      STARTED    1  6.3kb 192.168.100.37 node-3
+
+3 node    1 replicate dan 3  primary
+belajar               2     p      STARTED    1  9.5kb 192.168.100.37 node-3
+belajar               2     r      STARTED    1  9.5kb 192.168.100.37 node-1
+belajar               1     r      STARTED    3 12.4kb 192.168.100.37 node-2
+belajar               1     p      STARTED    3 12.4kb 192.168.100.37 node-1
+belajar               0     p      STARTED    1  6.3kb 192.168.100.37 node-2
+belajar               0     r      STARTED    1  6.3kb 192.168.100.37 node-3
+
+inilah yang di maksud dengan kondisi yellow :
+primary-replicate rsync =  rebalance =
+jika node-2 (partisi-0 atau shard-0) mati , replicate shard-0  pada  node-3(replicate shard-0/partisi-0) akan backup menggantikan  (parisi/shard-0) yang ada pada node-2
+yg akhirnya ada beberapa replica yang tidak di simpan
+
+
+kondisi red  :
+node tidak mampu melakukan rebalance = primarynya ada yang mati dan tidak sanggup backup dari replicate lain
+
+
+memiliki 
+
+jumlah node :
+http://192.168.100.37:9201/_cat/nodes?v
+
+
+
+
+
+================= / CLUSTER HEALTH ============================
+
+
+
+
+pertanyaaan pertanyaan rekjel :
+
+
+------------------------
+arsitektur elastic search
+
+clustering secara general, apakah masalah ganjil ini berlaku di semua apps? Katakanlah saya ada web server atau database, apakah baiknya di set ganjil juga jumlah nodenya?
+
+berlaku hanya untuk app yang punya master di cluster nya, biasanya yang stateful, kayak database, kalo aplikasi yang kita buat biasanya stateless, gak ngaruh mo genap atau ganjil, karena tiap app kita gak perlu saling komunikasi
+
+enggak, kalo web server atau app kita, gak harus ganjil, yang ganjil biasanya database dan sejenisnya
+
+------------------------
+
+------------------------
+Om  ketika ada split branch (katakan di node 3), pas saat kita melakukan query ke node 1 dan ternyata data ada di node 3 apa yang terjadi  ?
+
+split brain, bukan split branch :D
+ketika terjadi split brain, maka data akan di rebalance, jadi data pasti akan ada lagi
+kalo ada split brain, yang node lebih kecil akan otomatis gak mau kerja, jadi gak bisa nerima request apapun
+------------------------
+
+------------------------
+dalam 3 node master elasticsearch butuh loadbalancer kah di depannya ? jadi agent nembak ipaddressnya ke LB bukan langsung ke master elastic, best practicenya gmana ya ?
+bisa pake load balancer didepannya, atau bisa pake client side load balancer
+------------------------
+
+
+
+
+
+------------------------
+Ini menarik mas, saya pernah ikut seminar dan dibahas tentang high availability redundancy harus ganjil dan minimal 3, berarti ini hanya berlaku untuk scalling database saja ya?
+untuk definisi split brain tersebut, Apakah yg dimaksud kalau dalam 1 cluster ada 3 node, maka seolah2 terpecah jadi ada 2 cluster (1 cluster 2 node dan 1 cluster 1 node)??
+------------------------
+
+------------------------
+Ini menarik mas, saya pernah ikut seminar dan dibahas tentang high availability redundancy harus ganjil dan minimal 3, berarti ini hanya berlaku untuk scalling database saja ya?
+untuk definisi split brain tersebut, Apakah yg dimaksud kalau dalam 1 cluster ada 3 node, maka seolah2 terpecah jadi ada 2 cluster (1 cluster 2 node dan 1 cluster 1 node)??
+
+betul, itu split brain
+------------------------
+
+
+
+
+================ MySQL ke elastic ===============
+gak bisa otomatis, dari aplikasi harus ngirim data nya ke mysql dan elasticsearch
+================ / MySQL ke elastic ===============
+
+
+
+================ SINONIM ====================
+typo itu terlalu banyak kombinasinya, kalo orang masukin bs, mungkin artinya bisa atau baso, ambigu. Kalo mau, gunakan fitur sinonim untuk memasukkan kombinasi typo yang biasa dilakukan oleh user. atau menggunakan suggester di elasticsearch
+================ / SINONIM ====================
+
+
+
+================ clean up ====================
+seperti cara kerjanya mirip kafka mas, proses clean up dapat diatur (retention time).
+
+================ clean up ====================
+
+
+
+================
+kondisi awal: 
+
+node-1: p0, r1
+node-2: p1, r2
+node-3: p2, r0
+
+jika node-2 keluar dari cluster maka:
+node-1: p0, p1, r2 
+node-3: p2, r0, r1
+
+p=primary, r=replica
+
+keterangan:
+p1 pindah dari node-2 ke node-1 karena ketika primary down otomatis salah satu replica dari shard tsb akan di promote menjadi primary dan kebetulan replicanya hanya 1 dan replica dari p1 itu ada di node-1
+r1 pindah dari node-1 ke node-3 karena primary dari shard 1 sekarang sudah berada di node-1 sehingga r1 hanya bisa pindah ke node-3  
+r2 pindah dari node-2 ke node-1 karena primary dari shard 2 berada di node-3 sehingga r2 hanya bisa pindah ke node-1 
+================
+
+
+
+
+
+
+
+
+ELK stack  
+elasticsearch tapi sekalian logstash sama kibana
+
+
+
+
+
+
+=================================
+
+
+https://www.elastic.co/blog/how-to-keep-elasticsearch-synchronized-with-a-relational-database-using-logstash
+
+
+

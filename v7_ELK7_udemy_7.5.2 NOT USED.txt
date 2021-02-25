@@ -1,0 +1,149 @@
+ELK 7.5.2
+
+
+//========================== ELASTICSEARCH
+
+https://www.udemy.com/course/elasticsearch-masterclass/learn/lecture/18127643#overview
+
+ssh crypt@192.168.1.109 -p 22
+masuk123
+
+sudo -i
+
+apt-get update
+
+
+sudo useradd -m esuser << bkin account + home dir
+sudo usermod -s /bin/bash esuser  << biar bs login
+usermod -a -Gsudo esuser  << enable root
+sudo passwd esuser << ubah pass
+masuk123
+
+
+exit
+
+su esuser 
+
+cd /home/esuser && wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.5.2-linux-x86_64.tar.gz && \
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.5.2-linux-x86_64.tar.gz.sha512
+
+shasum -a 512 -c elasticsearch-7.5.2-linux-x86_64.tar.gz.sha512
+tar -xzvf elasticsearch-7.5.2-linux-x86_64.tar.gz
+
+mv elasticsearch-7.5.2 ES_7.5.2_node1
+
+cp -avr /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml-origin
+
+nano /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml
+cluster.name: eki-cluster
+node.name: node-1
+network.host: 0.0.0.0
+http.port: 9201
+discovery.seed_hosts: ["127.0.0.1"]
+cluster.initial_master_nodes: ["node-1"]
+
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+cp -avr /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml-0.0.0.0
+/home/esuser/ES_7.5.2_node1/bin/elasticsearch 	
+
+
+
+
+
+
+
+
+netstat -plnt
+//========================== / ELASTICSEARCH
+
+//========================== KIBANA
+
+cd /home/esuser && wget https://artifacts.elastic.co/downloads/kibana/kibana-7.5.2-linux-x86_64.tar.gz && \
+wget https://artifacts.elastic.co/downloads/kibana/kibana-7.5.2-linux-x86_64.tar.gz.sha512
+
+shasum -a 512 -c kibana-7.5.2-linux-x86_64.tar.gz.sha512
+tar -xzvf kibana-7.5.2-linux-x86_64.tar.gz
+
+mv kibana-7.5.2-linux-x86_64 KBN_7.5.2
+
+cp -avr /home/esuser/KBN_7.5.2/config/kibana.yml /home/esuser/KBN_7.5.2/config/kibana.yml-origin
+
+nano /home/esuser/KBN_7.5.2/config/kibana.yml
+server.port: 5601
+server.host: "0.0.0.0"
+elasticsearch.hosts: ["http://localhost:9201"]
+
+cp -avr /home/esuser/KBN_7.5.2/config/kibana.yml /home/esuser/KBN_7.5.2/config/kibana.yml-0.0.0.0
+
+/home/esuser/KBN_7.5.2/bin/kibana
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==========================
+ log   [08:50:43.931] [error][plugins][reporting][validations] The Reporting plugin encountered issues launching Chromium in a self-test. You may have trouble generating reports.
+  log   [08:50:43.941] [error][plugins][reporting][validations] Error: Failed to launch chrome!
+/home/esuser/KBN_7.5.2/x-pack/plugins/reporting/chromium/headless_shell-linux/headless_shell: error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
+
+
+TROUBLESHOOTING: https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md
+
+
+https://discuss.elastic.co/t/kibana-reporting-plugin-fails-to-launch-chrome-puppeteer/236195/4
+
+--- not use
+curl -sL 'https://unofficial-builds.nodejs.org/download/release/v12.16.3/node-v12.16.3-linux-x86.tar.xz' | xzcat | tar -vx --strip-components=1 -C /usr/local/
+--- not use
+
+
+
+--- use
+https://nodejs.org/en/download/
+https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz
+
+curl -sL 'https://nodejs.org/dist/v14.15.4/node-v14.15.4-linux-x64.tar.xz' | xzcat | tar -vx --strip-components=1 -C /usr/local/
+node -v
+---  use
+
+
+cd /home/esuser/KBN_7.5.2/x-pack
+
+//==========================
+
+
+
+
+
+//========================== / KIBANA
+
+
+
+cp -avr /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml-777
+chmod 777 -Rv /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml-777
+
+chmod 777 -Rv /home/esuser/ES_7.5.2_node1/config/elasticsearch.yml-777
+
+//================ enable
+
+
+//================ enable
+
+https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.5.2-linux-x86_64.tar.gz
+https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.5.2-linux-x86_64.tar.gz.sha512
+

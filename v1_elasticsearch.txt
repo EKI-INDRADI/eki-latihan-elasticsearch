@@ -1,0 +1,811 @@
+ ssh crypt@192.168.100.37 -p 22
+
+
+apt-get install openssh-client
+apt-get install openssh-server
+apt-get install openssh-sftp-server
+apt-get install nano
+
+apt-get update
+apt-get install default-jdk  (ubuntu 1804 defaultnya java 11)
+apt-get install openjdk-8-jdk
+apt-get install openjdk-11-jdk
+apt-get install zip unzip
+
+update-alternatives --config java  
+
+
+
+
+https://www.elastic.co/downloads/elasticsearch
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/targz.html
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html
+
+
+nano ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+
+export JAVA_8_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export PATH=$PATH:$JAVA_8_HOME/bin
+
+export ES_HOME=/home/esuser/ES_7.10.2
+export PATH=$PATH:$ES_HOME/bin
+
+
+
+sudo useradd -m esuser << bkin account + home dir
+sudo usermod -s /bin/bash esuser  << biar bs login
+usermod -a -Gsudo esuser  << enable root
+sudo passwd esuser << ubah pass
+masuk123
+
+chmod 777 -Rv /home/DL_FILES
+
+
+exit
+
+//============ install elasticsearch=========================================================
+
+su esuser
+
+mkdir /home/DL_FILES && cd /home/DL_FILES && wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.10.2-linux-x86_64.tar.gz && \
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.10.2-linux-x86_64.tar.gz.sha512
+shasum -a 512 -c elasticsearch-7.10.2-linux-x86_64.tar.gz.sha512 
+tar -xzf elasticsearch-7.10.2-linux-x86_64.tar.gz
+
+
+
+mv /home/DL_FILES/elasticsearch-7.10.2 /home/esuser/ES_7.10.2
+
+
+
+nano ~/.bashrc
+#export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+#export PATH_JAVA_HOME=$PATH_JAVA_HOME:$JAVA_HOME/bin
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export PATH_JAVA_HOME=$PATH_JAVA_HOME:$JAVA_HOME/bin
+
+export JAVA_11_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH_11=$PATH_11:$JAVA_HOME/bin
+
+export JAVA_8_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export PATH_8=$PATH_8:$JAVA_8_HOME/bin
+
+export ES_HOME=/home/esuser/ES_7.10.2
+export PATH_ES=$PATH_ES:$ES_HOME/bin
+
+
+
+
+
+export JAVA_11_HOME=/usr/lib/jvm/java-11-openjdk-amd64 && \
+export PATH_11=$PATH_11:$JAVA_HOME/bin
+
+export JAVA_8_HOME=/usr/lib/jvm/java-8-openjdk-amd64 && \
+export PATH_8=$PATH_8:$JAVA_8_HOME/bin
+
+
+
+export ES_HOME=/home/esuser/ES_7.10.2 && \
+export PATH_ES=$PATH_ES:$ES_HOME/bin
+
+
+update-alternatives --config java  
+
+https://github.com/elastic/elasticsearch/issues/43911
+nano $ES_HOME/config/jvm.options
+//----------- not use
+-Xmx4096m 
+-Xms4096m
+//----------- not use
+-Xms1g
+-Xmx1g
+
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/starting-elasticsearch.html#:~:text=Running%20Elasticsearch%20from%20the%20command%20lineedit&text=By%20default%2C%20Elasticsearch%20runs%20in,stopped%20by%20pressing%20Ctrl%2DC%20.
+
+
+
+
+ex run: 
+di terminal :
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+$ES_HOME/bin/elasticsearch -d 
+netstat -plnt
+curl localhost:9200
+curl 192.168.100.37:9200
+pkill -f elasticsearch
+
+//========== cara check healt dan log
+ls $ES_HOME/logs
+curl 192.168.100.37:9200/_cat/health
+http://192.168.100.37:9200/_cat/health
+curl -XGET '192.168.100.37:9200/_cluster/health?pretty'
+http://192.168.100.37:9200/_cluster/health?pretty
+//========== cara check healt dan log
+
+
+
+//============================= listen ip 0.0.0.0
+https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html
+nano $ES_HOME/config/elasticsearch.yml 
+network.host: 0.0.0.0
+cluster.initial_master_nodes: node-1
+
+
+https://stackoverflow.com/questions/51445846/elasticsearch-max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-inc
+di terminal :
+sudo -i
+sysctl -w vm.max_map_count=262144
+//============================= listen ip 0.0.0.0
+
+
+
+//=============== programmer zaman now
+
+lucene document  = struktur tabel
+isinya :
+atribute , value
+id, ..
+name , ..
+email,. . .
+
+
+index = di simpan dalam 1 lucine document
+index = tabel
+
+
+
+elasticsearch tidak ada database
+1 table = 1 index dalam  1 elasticsearch
+
+contoh database  a    tabel zxc
+maka indexnya a_zxc
+
+contoh database b tabel zxc
+maka indexnya b_zxc
+
+index = mirip seperti table
+
+
+============informasi sharding (secara default memotong 1 index/ 1 table menjadi beberapa bagian):
+1 index = otomatis akan di potong menjadi 5 bagian (0-4)
+
+1 index dipotong berdasarkan jumlah node (random) 
+
+misal jumlah node 3
+ada 1 index (defaultnya di potong dan akan menjadi 5 bagian)
+
+
+ 
+maka :
+
+node 1 = ada a_zxc_0 a_zxc_2
+node 2 = ada a_zxc_3 a_zxc_3
+node 3 = ada a_zxc_1
+
+============informasi replication  06
+
+index sharding dengan 1 replication 
+saat membuat replikasi 
+(otomatis elasticsearch akan membuat partisi bukan di node yang sama)
+
+data tidak akan hilang , jika replikasi / atau master yang mati, maka otomatis akan membuat masternya atau replikasinya sendiri dari node yang sudah ada
+
+============informasi rrouting document 07
+
+
+shard = partisi = index
+routing menyimpan document agar tidak random, agar melakukan penarian mudah
+
+shard = hash(id) % number_of_primary_shared
+% = modulo
+
+============informasi distributed document 08
+/CREATE/SAVE/insert/index DAN DELETE ke elasticsearch
+
+insert/delete node 1 -> 
+(routing)mencari data yg sama sebelumnya di partisi master lain ->
+ketika sudah di temukan > akan insert ke partisi tsb (walau ada di berbeda node) ->
+kemudian akan insert kembali ke sleep ( partisi backup/replicate) 
+akan menyimpan di partisi master tidak di sleep(partisi backup/replicate) 
+
+ambil data dari elasticsearch
+
+node 1 paritisi 1-> melakukan routing (mencari partisi) ke partisi lain secara random  -> setelah menemuka
+partisi akan mengambil dari partisi yang telah di tentukan partisi 0 node 3  -> selanjutnya akan di di kembalikan node 1 partisi master
+
+
+update data dari elasticsearch
+
+node 1 partisi 1 -> melakuka routing -> ketika menemukan partisi yang di cari -> melakukan upadte pada partisi yang dicari -> melakukan update pada paritsi replicate/paritsi backup yg di cari 
+
+
+============informasi imutable document 09
+
+elasticearch = imutable
+
+imutable = data tidak akan pernah brubah (tidak akan brubah walaupun insert edit delete , dml )
+
+
+benefit = 
+ tidak perlu locking data ketika melakukan perubahan karena locking itu lambat
+
+
+delete update info
+
+delete (soft delete):
+ketika melakukan delete , data tidak akan perhapus namun di simpan pada file .del , file ini berisi data2 yang di hapus dari es
+(sebenarnya hanya di tandai data terhapus saja pada es)
+
+
+update 
+
+delete data lama memasukin file ke .del (cuma tanddai data di .del) terus insert lagi dengan data bru
+
+
+scheduler .del
+otomatis akan menghapus data .del sesuai configurasi
+
+
+
+============informasi distributed search 10
+
+search akan melakuakn search ke semua shard/partisi
+
+ada 5 shard = hanya melakukan 1/2 searching dari partisi dan
+hasil result keseluruhan akan digabung.
+
+ada 3 proses search
+
+1. query phase : 
+- searching -> misal node 3 -> tidak akan melakukan searching ke node yg awal di search karena agar tidak terbebani (node 3)
+ -> melakukan search di mulai ke partisi di dekatnya lalu searching ke node lain -> hasil dari searching akan  menyimpan ke node yg melakukan searching (node3)
+
+2. fetch phase :
+hasil query misal total 500 -> sorting,  limit data dari data yang di peroleh -> lalu di balikkan  node yang melakukan pencarian -> ke aplikasi
+
+
+3.pada proses fetch phase akan ada masalah , contohnya deep pagination
+
+deep pagination = mengembalikan data yang di terima , ketika melakukan search limit 100 , maka misal ada 5 shard = 5 * 100 limit maka hasilnya akan 500 = kemudian dari 500 tersebut akan ditampilkan 100 data dari keseluruhan data yang terbarik / lebih mirip
+
+
+masalah ada pada saat mebuat pagination elastic search maximal membuat record hanya 10rb dan itu akan memakan resource dari cpu yang besar
+
+alternatif solusinya menggunakan fitur scroll elasticsearch
+
+
+
+
+
+============informasi menginstall elasticsearch 11
+
+gak perlu install java karena di dalem elasticsearch udah ada java nya
+
+single node
+
+
+$ES_HOME/config/jvm.options
+
+konfigurasi dari memory
+-Xms1g   = minimum jvm 1gb
+-Xmx1g   = maximum jvm  1gb
+
+harus sama agar si jvm tidak terbebani data masuk dan keluar agar sama2 outputnya 1gb
+
+recomendasi 50% dari memory dari laptop yg digunakan cth memory 10gb  rec 5gb jvm nya
+
+
+
+swap ram wajib di matikan jika di linux server , swap = ram virtual lemot
+
+karena es banyak memakan memory
+
+$ES_HOME/config/elasticsearch.yml
+cluster.name = my-aplication
+
+jika lebih dari 1 node atau lebih dari 1 aplikasi
+pastikan cluster.name nya sama
+
+
+========
+cth node 1 
+$ES_HOME/config/elasticsearch.yml
+cluster.name = eki
+
+node 2
+$ES_HOME/config/elasticsearch.yml
+cluster.name = eki
+========
+
+node.name : node-1       ( kalo bisa berbeda dengan   node lain )
+
+
+#path.data : /lokasi/data
+#path.logs : /lokasi/logs
+
+bisa di sesuaikan dengan keinginan
+
+
+#boostrap.memory_lock : false <<<< jika true lock memory akan memakan maximum dari memory JVM
+jika pertama kali start  maka akan memakan maximum dari memory jvm , kalo false  memory JVM di pakai disesuaikan kebutuhan
+
+fungsi : true , biar ga lemot ketika es automatic nambahin memory, jadi secara default memory kepakai maximal agar kinerja kebut
+
+
+
+#network.host : set network
+#http.port : set port
+
+
+ex run: 
+di terminal :
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+$ES_HOME/bin/elasticsearch -d 
+netstat -plnt
+curl localhost:9200
+curl 192.168.100.37:9200
+pkill -f elasticsearch
+
+
+============informasi Menginstall ElasticSearch Cluster 12
+
+su esuser
+cd /home/esuser
+jangan apke $ES_HOME karena /home/esuser/ES_7.10.2
+
+cp -avr ES_7.10.2   ES_7.10.2_cluster_0
+cp -avr ES_7.10.2   ES_7.10.2_cluster_1
+cp -avr ES_7.10.2   ES_7.10.2_cluster_2
+
+
+--------------------------------------------------------------
+nano /home/esuser/ES_7.10.2_cluster_0/config/elasticsearch.yml  
+cluster.name : eki-cluster
+node.name : node-0
+
+network.host: 0.0.0.0
+
+http.port: 9400
+
+discovery.seed_hosts: ["127.0.0.1"]
+
+#cluster.initial_master_nodes: node-0
+cluster.initial_master_nodes: ["node-0","node-1", "node-2"]
+
+--------------------------------------------------------------
+nano /home/esuser/ES_7.10.2_cluster_1/config/elasticsearch.yml
+cluster.name : eki-cluster
+node.name : node-1
+
+network.host: 0.0.0.0
+
+http.port: 9401
+
+discovery.seed_hosts: ["127.0.0.1"]
+
+#cluster.initial_master_nodes: node-1
+cluster.initial_master_nodes: ["node-0","node-1", "node-2"]
+
+--------------------------------------------------------------
+nano /home/esuser/ES_7.10.2_cluster_2/config/elasticsearch.yml  
+cluster.name : eki-cluster
+node.name : node-2
+
+network.host: 0.0.0.0
+
+http.port: 9402
+
+discovery.seed_hosts: ["127.0.0.1"]
+
+#cluster.initial_master_nodes: node-2
+cluster.initial_master_nodes: ["node-0","node-1", "node-2"] 
+walaupun ada 100 node tapi di ser 3 node aja itu gpp
+mungkin berguna kayak semacem failover gt 
+--------------------------------------------------------------
+
+discovery.seed_hosts:  <<<< di sesuaikan dengan ip public server
+
+
+
+# The default list of hosts is ["127.0.0.1", "[::1]"]
+
+cluster.initial_master_nodes: ["node-0","node-1", "node-2"]  <<< ini adalah cluster inittial utama,  minimal jika di set 3 master
+minimalnya harus 2 yang nyala jika  hanya 1 maka cluster tidak enyala
+
+
+
+
+
+cp -avr /home/esuser/ES_7.10.2_cluster_0/config/elasticsearch.yml  /home/esuser/ES_7.10.2_cluster_0/config/elasticsearch.yml-0-backup
+cp -avr /home/esuser/ES_7.10.2_cluster_1/config/elasticsearch.yml  /home/esuser/ES_7.10.2_cluster_1/config/elasticsearch.yml-0-backup
+cp -avr /home/esuser/ES_7.10.2_cluster_2/config/elasticsearch.yml  /home/esuser/ES_7.10.2_cluster_2/config/elasticsearch.yml-0-backup
+
+--------------------------------------------------------------
+nano /home/esuser/ES_7.10.2_cluster_0/config/elasticsearch.yml  
+cluster.name : eki-cluster
+node.name : "node-0"
+
+network.host: 127.0.0.1
+
+http.port: 9200
+
+discovery.seed_hosts: ["127.0.0.1"]
+
+#cluster.initial_master_nodes: node-0
+cluster.initial_master_nodes: ["node-0","node-1", "node-2"]
+
+--------------------------------------------------------------
+nano /home/esuser/ES_7.10.2_cluster_1/config/elasticsearch.yml
+cluster.name : eki-cluster
+node.name : "node-1"
+
+network.host: 127.0.0.1
+
+http.port: 9201
+
+discovery.seed_hosts: ["127.0.0.1"]
+
+#cluster.initial_master_nodes: node-1
+cluster.initial_master_nodes: ["node-0","node-1", "node-2"]
+
+--------------------------------------------------------------
+nano /home/esuser/ES_7.10.2_cluster_2/config/elasticsearch.yml  
+cluster.name : eki-cluster
+node.name : "node-2"
+
+network.host: 127.0.0.1
+
+http.port: 9202
+
+discovery.seed_hosts: ["127.0.0.1"]
+
+#cluster.initial_master_nodes: node-2
+cluster.initial_master_nodes: ["node-0","node-1", "node-2"] 
+walaupun ada 100 node tapi di ser 3 node aja itu gpp
+mungkin berguna kayak semacem failover gt 
+--------------------------------------------------------------
+
+
+
+ <<< ini adalah cluster inittial utama, 
+
+sysctl -w vm.max_map_count=262144
+/home/esuser/ES_7.10.2_cluster_0/bin/elasticsearch
+/home/esuser/ES_7.10.2_cluster_1/bin/elasticsearch
+/home/esuser/ES_7.10.2_cluster_2/bin/elasticsearch
+
+
+
+
+//========== cara check healt dan log
+https://gist.github.com/evert0n/3f5d1dce2ae107f17faf9318a5058400#cluster-health
+http://192.168.100.37:9400/_cluster/state?pretty
+http://192.168.100.37:9400/_cat/nodes
+http://192.168.100.37:9401/_cat/nodes
+http://192.168.100.37:9402/_cat/nodes
+
+http://192.168.100.37:9400/_cat/health
+http://192.168.100.37:9400/_cluster/health?pretty
+
+curl 192.168.100.37:9300/_cat/health
+curl -XGET '192.168.100.37:9300/_cluster/health?pretty'
+//========== cara check healt dan log
+
+
+
+//========== cara check healt dan log
+https://gist.github.com/evert0n/3f5d1dce2ae107f17faf9318a5058400#cluster-health
+http://192.168.100.37:9200/_cat/nodes
+http://192.168.100.37:9201/_cat/nodes
+http://192.168.100.37:9202/_cat/nodes
+
+http://192.168.100.37:9200/_cat/health
+http://192.168.100.37:9200/_cluster/health?pretty
+
+curl 192.168.100.37:9300/_cat/health
+curl -XGET '192.168.100.37:9300/_cluster/health?pretty'
+
+
+curl -XGET 'localhost:9400/_cluster/health?pretty'
+
+curl -XGET 'localhost:9400/_cat/nodes'
+
+curl -XGET 'localhost:9200/_cluster/health?pretty'
+
+curl -XGET 'localhost:9200/_cat/nodes'
+
+
+
+https://www.elastic.co/downloads/past-releases#elasticsearch
+elastic versi 7.1.1
+
+
+su esuser
+
+mkdir /home/DL_FILES && cd /home/DL_FILES && wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-linux-x86_64.tar.gz
+ && \
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.10.2-linux-x86_64.tar.gz.sha512
+shasum -a 512 -c elasticsearch-7.10.2-linux-x86_64.tar.gz.sha512 
+
+
+
+
+
+
+
+//========== cara check healt dan log
+
+
+
+
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-linux-x86_64.tar.gz
+tar -xzf elasticsearch-7.1.1-linux-x86_64.tar.gz
+
+
+mv elasticsearch-7.1.1 ES_7.1.1_node1
+cp -avr elasticsearch-7.1.1-node1
+
+
+edit config
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+
+
+/home/esuser/ES_7.1.1_node1/bin/elasticsearch
+http://192.168.100.37:9201/
+http://192.168.100.37:9201/_cat/nodes
+http://192.168.100.37:9201/_cluster/state?pretty
+/home/esuser/ES_7.1.1_node2/bin/elasticsearch
+/home/esuser/ES_7.1.1_node3/bin/elasticsearch
+
+
+
+
+edit config   (sesuai vid harus pake localhost)
+
+
+curl localhost:9201/
+curl localhost:9201/_cat/nodes
+curl localhost:9201/_cluster/state?pretty
+curl localhost:9201/_cat/nodes?v
+
+curl localhost:9202/
+curl localhost:9202/_cat/nodes
+curl localhost:9202/_cluster/state?pretty
+
+curl localhost:9203/
+curl localhost:9203/_cat/nodes
+curl localhost:9203/_cluster/state?pretty
+
+
+http://192.168.100.37:9201/
+http://192.168.100.37:9201/_cat/nodes
+http://192.168.100.37:9201/_cluster/state?pretty
+http://192.168.100.37:9201/_cat/nodes?v
+ip             heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+192.168.100.37           13          97   5    0.98    0.78     0.43 mdi       *      node-2
+192.168.100.37           17          97   4    0.98    0.78     0.43 mdi       -      node-3
+192.168.100.37           17          97   4    0.98    0.78     0.43 mdi       -      node-1
+
+cp -avr ./ES_7.1.1_node1/config/elasticsearch.yml ./ES_7.1.1_node1/config/elasticsearch.yml-localhost-ok
+cp -avr ./ES_7.1.1_node2/config/elasticsearch.yml ./ES_7.1.1_node2/config/elasticsearch.yml-localhost-ok
+cp -avr ./ES_7.1.1_node3/config/elasticsearch.yml ./ES_7.1.1_node3/config/elasticsearch.yml-localhost-ok
+
+cp -avr /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml-0.0.0.0-ok
+cp -avr /home/esuser/ES_7.1.1_node2/config/elasticsearch.yml /home/esuser/ES_7.1.1_node2/config/elasticsearch.yml-0.0.0.0-ok
+cp -avr /home/esuser/ES_7.1.1_node3/config/elasticsearch.yml /home/esuser/ES_7.1.1_node3/config/elasticsearch.yml-0.0.0.0-ok
+
+nano /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml 
+nano /home/esuser/ES_7.1.1_node2/config/elasticsearch.yml 
+nano /home/esuser/ES_7.1.1_node3/config/elasticsearch.yml 
+
+
+//=============== / programmer zaman now
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//============================ kafka elasticsearch
+https://www.confluent.io/blog/kafka-elasticsearch-connector-tutorial/
+
+https://docs.confluent.io/kafka-connect-elasticsearch/current/index.html
+
+https://www.confluent.io/blog/the-simplest-useful-kafka-connect-data-pipeline-in-the-world-or-thereabouts-part-2/
+https://rmoff.net/2019/10/07/kafka-connect-and-elasticsearch/
+
+
+confluent-hub install confluentinc/kafka-connect-elasticsearch:7.2.10
+
+//============================ kafka elasticsearch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================== confluent
+
+apt-get install openssh-client
+apt-get install openssh-server
+apt-get install openssh-sftp-server
+apt-get install nano
+
+apt-get update
+apt-get install default-jdk  (ubuntu 1804 defaultnya java 11)
+--apt-get install openjdk-8-jdk
+--apt-get install openjdk-11-jdk
+apt-get install zip unzip
+
+update-alternatives --config java  
+
+
+cd /home && wget https://packages.confluent.io/archive/6.0/confluent-6.0.1.zip
+
+
+mv confluent-6.0.1 CONFLUENT_6_FILES
+
+nano ~/.bashrc
+export JAVAHOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+
+export JAVA_8_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+
+export CONFLUENT_HOME=/home/CONFLUENT_6_FILES
+export PATH=$PATH:$CONFLUENT_HOME/bin
+
+
+
+
+
+
+export CONFLUENT_HOME=/home/CONFLUENT_6_FILES \
+export PATH=$PATH:$CONFLUENT_HOME/bin
+
+
+
+confluent-hub install \
+   --no-prompt confluentinc/kafka-connect-datagen:latest
+
+
+confluent-hub install \
+confluentinc/kafka-connect-elasticsearch:latest
+
+
+//======================
+Downloading component Kafka Connect Elasticsearch 11.0.0, provided by Confluent, Inc. from Confluent Hub and installing into /home/CONFLUENT_6_FILES/share/confluent-hub-components
+Detected Worker's configs:
+  1. Standard: /home/CONFLUENT_6_FILES/etc/kafka/connect-distributed.properties
+  2. Standard: /home/CONFLUENT_6_FILES/etc/kafka/connect-standalone.properties
+  3. Standard: /home/CONFLUENT_6_FILES/etc/schema-registry/connect-avro-distributed.properties
+  4. Standard: /home/CONFLUENT_6_FILES/etc/schema-registry/connect-avro-standalone.properties
+Do you want to update all detected configs? (yN) y
+
+Adding installation directory to plugin path in the following files:
+  /home/CONFLUENT_6_FILES/etc/kafka/connect-distributed.properties
+  /home/CONFLUENT_6_FILES/etc/kafka/connect-standalone.properties
+  /home/CONFLUENT_6_FILES/etc/schema-registry/connect-avro-distributed.properties
+  /home/CONFLUENT_6_FILES/etc/schema-registry/connect-avro-standalone.properties
+
+Completed
+//======================
+
+NEXT
+https://www.confluent.io/blog/kafka-elasticsearch-connector-tutorial/
+or
+https://docs.confluent.io/kafka-connect-elasticsearch/current/index.html
+
+
+====================== confluent
+
+
+
+
+
+
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html#static-cluster-setting
+nano $ES_HOME/config/elasticsearch.yml 
+elasticsearch.yml for configuring Elasticsearch
+jvm.options for configuring Elasticsearch JVM settings
+log4j2.properties for configuring Elasticsearch logging
+
+
+
+
+
+network.host: 'site,local'
+node.name: "node-1"
+#discovery.seed_hosts: ["127.0.0.1", "[::1]"]
+cluster.initial_master_nodes: ["node-1"]
+
+
+https://github.com/elastic/elasticsearch/issues/13592
+nano $ES_HOME/config/elasticsearch.yml 
+network.host: [_enp0s3_, _local_]
+
+
+https://stackoverflow.com/questions/58236799/configuring-elastic-search-to-listen-on-0-0-0-09200-ipv4
+nano $ES_HOME/config/jvm.options
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//================ not used
+$ES_HOME/bin/elasticsearch -d -p pid
+./bin/elasticsearch -d -p pid
+
+To shut down Elasticsearch, kill the process ID recorded in the pid file:
+pkill -F pid
+
+ex :
+$ES_HOME/bin/elasticsearch -d -p 5132
+pkill -F 5132
+
+./bin/elasticsearch
+, but if you exit the terminal or press Ctrl+X it will stop.
+
+./bin/elasticsearch -d
+./bin/elasticsearch start
+//================ not used
+
+
+
+
+
+
+
+curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.10.2-amd64.deb
+sudo dpkg -i elasticsearch-7.10.2-amd64.deb
+sudo /etc/init.d/elasticsearch start

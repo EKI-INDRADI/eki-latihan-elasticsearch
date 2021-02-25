@@ -1,0 +1,821 @@
+5. Index the document Only if it does not already exist
+
+how to get data out from elasticsearch
+
+
+Search Basics
+
+
+
+
+
+REQ1-----------------
+
+POST _bulk
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "1"}}
+{ "title" : "indroduction to elasticsearch","content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .","published_date" : "2020-01-02","tags" : ["elasticsearch","distributed","storage"],"no_of_likes" : 21,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "2"}}
+{ "title" : "why is elasticsearch fast?","content" : "it is able to archive fast search because, instead of searching the text directly, it searches an ...","published_date" : "2020-01-02","tags" : ["elasticsearch","fast","index"],"no_of_likes" : 10,"status" : "draft"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "3"}}
+{ "title" : "indroduction the new React Devtools", "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", "published_date" : "2019-08-25", "tags" : ["react", "devtools"],     "no_of_likes" : 21,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "4"}}
+{ "title" : "Angular Tools for High Performance","content" : "This post, contains a list of new tools and practices that can help us build faster Angular apps and monitor their performance over time", "published_date" : "2014-03-22", "tags" : ["angular", "performance", "fast"],"no_of_likes" : 35,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "5"}}
+{ "title" : "The new features in java 14","content" : "Oracle on september 17 said switch expressions are expected to go final in java Development Kit 14", "published_date" : "2019-07-20", "tags" : ["java"],"no_of_likes" : 11,"status" : "published"}
+{ "index" : {"_index" : "blogposts_belajar_bulk_part2", "_id": "6"}}
+{ "title" : "Thread behavior in the JVM","content" : "Threading refers to thepractice of executing programing processes concurrently to imporve application performance.", "published_date" : "2019-07-20", "tags" : ["java","jvm"],"no_of_likes" : 3,"status" : "draft"}
+
+
+------------------------
+
+RESP1---------------------
+
+{
+  "took" : 55,
+  "errors" : false,
+  "items" : [
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_version" : 2,
+        "result" : "updated",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 6,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    },
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "2",
+        "_version" : 2,
+        "result" : "updated",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 7,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    },
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "3",
+        "_version" : 2,
+        "result" : "updated",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 8,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    },
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "4",
+        "_version" : 2,
+        "result" : "updated",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 9,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    },
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "5",
+        "_version" : 2,
+        "result" : "updated",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 10,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    },
+    {
+      "index" : {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "6",
+        "_version" : 2,
+        "result" : "updated",
+        "_shards" : {
+          "total" : 2,
+          "successful" : 1,
+          "failed" : 0
+        },
+        "_seq_no" : 11,
+        "_primary_term" : 1,
+        "status" : 200
+      }
+    }
+  ]
+}
+
+------------------------
+
+REQ2--------------------
+GET /blogposts_belajar_bulk_part2/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+atau
+GET /blogposts_belajar_bulk_part2/_search
+------------------------
+
+RESP2---------------------
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 6,
+      "relation" : "eq"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "indroduction to elasticsearch",
+          "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+          "published_date" : "2020-01-02",
+          "tags" : [
+            "elasticsearch",
+            "distributed",
+            "storage"
+          ],
+          "no_of_likes" : 21,
+          "status" : "published"
+        }
+      },
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "2",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "why is elasticsearch fast?",
+          "content" : "it is able to archive fast search because, instead of searching the text directly, it searches an ...",
+          "published_date" : "2020-01-02",
+          "tags" : [
+            "elasticsearch",
+            "fast",
+            "index"
+          ],
+          "no_of_likes" : 10,
+          "status" : "draft"
+        }
+      },
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "3",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "indroduction the new React Devtools",
+          "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge",
+          "published_date" : "2019-08-25",
+          "tags" : [
+            "react",
+            "devtools"
+          ],
+          "no_of_likes" : 21,
+          "status" : "published"
+        }
+      },
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "4",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Angular Tools for High Performance",
+          "content" : "This post, contains a list of new tools and practices that can help us build faster Angular apps and monitor their performance over time",
+          "published_date" : "2014-03-22",
+          "tags" : [
+            "angular",
+            "performance",
+            "fast"
+          ],
+          "no_of_likes" : 35,
+          "status" : "published"
+        }
+      },
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "5",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "The new features in java 14",
+          "content" : "Oracle on september 17 said switch expressions are expected to go final in java Development Kit 14",
+          "published_date" : "2019-07-20",
+          "tags" : [
+            "java"
+          ],
+          "no_of_likes" : 11,
+          "status" : "published"
+        }
+      },
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "6",
+        "_score" : 1.0,
+        "_source" : {
+          "title" : "Thread behavior in the JVM",
+          "content" : "Threading refers to thepractice of executing programing processes concurrently to imporve application performance.",
+          "published_date" : "2019-07-20",
+          "tags" : [
+            "java",
+            "jvm"
+          ],
+          "no_of_likes" : 3,
+          "status" : "draft"
+        }
+      }
+    ]
+  }
+}
+
+------------------------
+
+
+contoh dari response ke 2
+
+terdapat  banyak value:key
+kita dapat mengambil speisifkasi result berdakarkan value dari JSON yang elasticsearch tampilkan
+
+------------melakukan pencarian
+
+
+
+
+
+
+
+REQ3 ------------------
+menampilkan seluruh value yang memiliki kata elasticsearch 
+GET /blogposts_belajar_bulk_part2/_search?q=elasticsearch
+
+
+menampilkan title yang memiliki elasticsearch = select * from table_name where title="elasticsearch"
+GET /blogposts_belajar_bulk_part2/_search?q=title:elasticsearch
+------------------
+
+
+pada total value akan brubah mnejadi 2
+RESP3 ------------------
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 2,
+      "relation" : "eq"
+    },
+    "max_score" : 1.20579,
+    "hits" : [
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 1.20579,
+        "_source" : {
+          "title" : "indroduction to elasticsearch",
+          "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+          "published_date" : "2020-01-02",
+          "tags" : [
+            "elasticsearch",
+            "distributed",
+            "storage"
+          ],
+          "no_of_likes" : 21,
+          "status" : "published"
+        }
+      },
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "2",
+        "_score" : 1.093527,
+        "_source" : {
+          "title" : "why is elasticsearch fast?",
+          "content" : "it is able to archive fast search because, instead of searching the text directly, it searches an ...",
+          "published_date" : "2020-01-02",
+          "tags" : [
+            "elasticsearch",
+            "fast",
+            "index"
+          ],
+          "no_of_likes" : 10,
+          "status" : "draft"
+        }
+      }
+    ]
+  }
+}
+
+------------------
+
+
+------------melakukan pencarian
+
+
+
+
+menampilkan seluruh value yang memiliki kata  java  dan kata performance
+GET /blogposts_belajar_bulk_part2/_search?q=java performance
+
+curl -XGET "http://localhost:9201/blogposts_belajar_bulk_part2/_search?q=java%20performance&pretty"
+http://192.168.1.106:9201/blogposts_belajar_bulk_part2/_search?q=java%20performance&pretty
+
+
+
+======================== QUERY DSL
+
+https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+
+(_search?q= , match, match_all ) =  full-text search
+
+
+----------------------------
+
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+      "match" : {
+         "title" : "elasticsearch"
+      }
+   }
+}
+
+
+sama  seperti di atas speisifk mencari title 
+
+----------------------------
+
+
+mencari  result berdasarkan keseluruhan
+
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+      "match_all" : {}
+   }
+}
+
+
+----------------------------
+
+
+mencari result berasarkan  value title dan tags saja
+
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+      "multi_match" : {
+            "query" : "elasticsearch",
+            "fields" : ["title","tags"]
+       }
+   }
+}
+
+
+-----------match menjadi OR --------------------
+
+setiap  query  ke elasticsearch akan di analisa lebih dalam (jika ada spasi) misalkan
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+      "match" : {
+         "content" : "java performance"
+      }
+   }
+}
+-----------
+
+maka pencarian akan mencari data berdasarkan java dan performance , 
+jadi perintah match pada kasus ini akan menjadi sebuah OR operator , java or performance
+
+-----------match_pharse spasi di gabung menjadi di lakukan pencarian --------------------
+
+jika pencarian ingin di gabung seperti sql like "%java performance%" maka harus menggunakan match_phrase
+
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+      "match_phrase": {
+         "content" : "java performance"
+      }
+   }
+}
+
+-----------
+
+======================== Bool Query
+
+must  match   artinya ( include  / mencari yang sesuai match yang sama pada query )
+
+REQ -------------------------------------
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+     "bool" : {
+        "must" : [{
+           "match": {
+               "content" : "performance"
+            }
+         }]
+      }
+   }
+}
+----------------------------------------
+
+RESP -----------------------------------
+{
+  "took" : 0,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 2,
+      "relation" : "eq"
+    },
+    "max_score" : 1.1580145,
+    "hits" : [
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "6",
+        "_score" : 1.1580145,
+        "_source" : {
+          "title" : "Thread behavior in the JVM",
+          "content" : "Threading refers to thepractice of executing programing processes concurrently to imporve application performance.",
+          "published_date" : "2019-07-20",
+          "tags" : [
+            "java",
+            "jvm"
+          ],
+          "no_of_likes" : 3,
+          "status" : "draft"
+        }
+      },
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "4",
+        "_score" : 0.90201867,
+        "_source" : {
+          "title" : "Angular Tools for High Performance",
+          "content" : "This post, contains a list of new tools and practices that can help us build faster Angular apps and monitor their performance over time",
+          "published_date" : "2014-03-22",
+          "tags" : [
+            "angular",
+            "performance",
+            "fast"
+          ],
+          "no_of_likes" : 35,
+          "status" : "published"
+        }
+      }
+    ]
+  }
+}
+
+----------------------------------------
+
+must_not  artinya ( exclude  / mencari yang match yang bukan  pada query )
+
+
+REQ -------------------------------------
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+     "bool" : {
+        "must" : [{
+           "match": {
+               "content" : "performance"
+            }
+         }],
+        "must_not" : [{
+           "match" : {   
+              "title" : "angular"
+           }
+        }]
+      }
+   }
+}
+----------------------------------------
+
+RESP -----------------------------------
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1,
+      "relation" : "eq"
+    },
+    "max_score" : 1.1580145,
+    "hits" : [
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "6",
+        "_score" : 1.1580145,
+        "_source" : {
+          "title" : "Thread behavior in the JVM",
+          "content" : "Threading refers to thepractice of executing programing processes concurrently to imporve application performance.",
+          "published_date" : "2019-07-20",
+          "tags" : [
+            "java",
+            "jvm"
+          ],
+          "no_of_likes" : 3,
+          "status" : "draft"
+        }
+      }
+    ]
+  }
+}
+----------------------------------------
+
+
+
+
+---------------------------------------
+
+should artinya ( menambahkan  sesuai kondisi match atau match_not, dll 
+misalkan match sebelumya
+
+        "must" : [{
+           "match": {
+               "content" : "performance"
+            }
+         }],
+
+
+
+pada shouldnya match    react
+
+maka pencarian akan mencari "react performance"
+
+
+
+masih agak bingung di bagian ini
+
+ )
+
+
+REQ -------------------------------------
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+     "bool" : {
+        "must" : [{
+           "match": {
+               "content" : "performance"
+            }
+         }],
+        "must_not" : [{
+           "match" : {   
+              "title" : "angular"
+           }
+        }],
+        "should" : [{
+           "match": {
+               "title" : "react"
+            }
+        }]
+      }
+   }
+}
+----------------------------------------
+
+RESP -----------------------------------
+{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1,
+      "relation" : "eq"
+    },
+    "max_score" : 1.1580145,
+    "hits" : [
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "6",
+        "_score" : 1.1580145,
+        "_source" : {
+          "title" : "Thread behavior in the JVM",
+          "content" : "Threading refers to thepractice of executing programing processes concurrently to imporve application performance.",
+          "published_date" : "2019-07-20",
+          "tags" : [
+            "java",
+            "jvm"
+          ],
+          "no_of_likes" : 3,
+          "status" : "draft"
+        }
+      }
+    ]
+  }
+}
+
+----------------------------------------
+
+
+REQ -------------------------------------
+
+jika query memiliki kata elasticsearch yang like nya lebih dari 20
+
+gte = grater than 
+lte = lower than
+
+
+---- example
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+     "bool" : {
+        "must" : [{
+           "match": {
+               "tags" : "elasticsearch"
+            }
+         }],
+        "filter" : {
+            "range" : {
+               "no_of_likes" : {
+                  "gte" : 20,
+                  "lte" : 20
+               }
+            }
+         }
+      }
+   }
+}
+
+---- example
+
+
+
+req ----------------------------------------
+
+GET /blogposts_belajar_bulk_part2/_search
+{
+   "query" : { 
+     "bool" : {
+        "must" : [{
+           "match": {
+               "tags" : "elasticsearch"
+            }
+         }],
+        "filter" : {
+            "range" : {
+               "no_of_likes" : {
+                  "gte" : 20
+               }
+            }
+         }
+      }
+   }
+}
+----------------------------------------
+
+
+resp----------------------------------------
+{
+  "took" : 0,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1,
+      "relation" : "eq"
+    },
+    "max_score" : 0.9218687,
+    "hits" : [
+      {
+        "_index" : "blogposts_belajar_bulk_part2",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 0.9218687,
+        "_source" : {
+          "title" : "indroduction to elasticsearch",
+          "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+          "published_date" : "2020-01-02",
+          "tags" : [
+            "elasticsearch",
+            "distributed",
+            "storage"
+          ],
+          "no_of_likes" : 21,
+          "status" : "published"
+        }
+      }
+    ]
+  }
+}
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=========== get speisifik index (speisifk tabel)
+
+untuk menampatkan data multi index
+
+contoh format
+GET /index1,index2/_search
+
+
+
+example
+GET /blogposts_belajar_bulk,blogposts_belajar_bulk_part2/_search
+
+GET /blogposts*/_search
+
+=========== 

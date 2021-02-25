@@ -1,0 +1,201 @@
+-Life Inside Cluster-node-index-shards
+
+GET /blogsposts
+- number_of_shards 
+- number_of_replicas
+
+
+
+
+
+example cara setting shard dan replicas
+PUT /blogs
+{
+  "setting" : {
+     "number_of_shards" :  3,
+     "number_of_replicas" : 3
+  } 
+}
+
+60 Doc akan di simpan pada
+
+P1 (20 doc)
+- R1
+- R2
+- R3
+
+P2 (20 doc)
+- R1
+- R2
+- R3
+
+P3 (20 doc)
+- R1
+- R2
+- R3
+
+
+
+
+
+example
+
+GET /blogsposts
+
+
+......
+ "settings" : {
+      "index" : {
+        "creation_date" : "1612237960506",
+        "number_of_shards" : "1",
+        "number_of_replicas" : "1",
+        "uuid" : "GNBJkm7lTa2rAK16vGhQDg",
+        "version" : {
+          "created" : "7090399"
+        },
+        "provided_name" : "blogsposts"
+      }
+......
+
+
+
+
+UUID adalah primary/id dari index yang unik
+1 index bisa memiliki bnyk 1 atau bnyk partisi/shard
+1 partisi/shard bisa memiliki 1 atau bnyk master node
+1 partisi/shard bisa memiliki 1 atau banyak replicate
+
+
+
+"sort" : [{
+  "email.keyword" : {
+     "order" : "desc"
+  }
+}]
+
+
+---------------- mappings
+
+PUT /blogs
+{
+  "setting" : {
+     "number_of_shards" :  3,
+     "number_of_replicas" : 3
+  } 
+}
+
+
+
+
+
+GET /blogsposts
+ada type selain text yaitu keyboard , dll
+
+bias di lihat dari get
+
+
+ketika membuat index dan shard ,
+ jika partisi/index sudah d buat  maka tidak bisa di buat
+
+
+PUT /blogsposts_part2
+{
+  "settings" : {
+        "number_of_shards" : "1",
+        "number_of_replicas" : "0"
+  } 
+}
+
+PUT /blogsposts_part3
+{
+  "settings" : {
+        "number_of_shards" : 1,
+        "number_of_replicas" : 0
+  } 
+}
+
+
+tetapi jika shard sudah dibuat maka replicate dapat di buat dengan bantuan 
+PUT /blogsposts_part3/_settings
+{
+ "number_of_replicas" : 1
+}
+
+
+
+
+membuat tipe data secara spesifik dari index yang telah di buat
+
+
+GET  /blogspots
+GET  /blogspots_part3
+ "type" : "long" = number
+ "type" : "date" = date
+ "type" : "text" = string
+
+
+PUT /blogsposts_part3/_mapping
+{
+    "properties" : { 
+         "title" : { "type" : "text" },
+         "content" : { "type" : "text" },
+         "published_date" : { "type" : "date" }
+    }
+}
+
+GET /blogsposts
+
+PUT /blogsposts_part3/_mapping
+{
+    "properties" : { 
+         "title" : { "type" : "text" },
+         "content" : { "type" : "text" },
+         "published_date" : { "type" : "date" }
+    }
+}
+
+PUT /blogsposts_part3/_mapping
+{
+    "properties" : { 
+         "no_of_likes" : { "type" : "text" },
+         "tags" : { "type" : "text" },
+         "status" : { "type" : "date" }
+    }
+}
+
+DELETE /blogsposts_part3
+
+
+PUT /blogsposts_part3
+{
+  "settings" : {
+        "number_of_shards" : 1,
+        "number_of_replicas" : 1
+  } 
+}
+
+
+PUT /blogsposts_part3/_mapping
+{
+    "properties" : { 
+         "title" : { "type" : "text" },
+         "content" : { "type" : "text" },
+         "published_date" : { "type" : "date" },
+         "no_of_likes" : { "type" : "long" },
+         "tags" : { "type" : "text" },
+         "status" : { "type" : "text" }
+    }
+}
+
+
+GET /blogsposts_part3
+
+
+component an index
+next 20:01
+
+
+
+
+
+

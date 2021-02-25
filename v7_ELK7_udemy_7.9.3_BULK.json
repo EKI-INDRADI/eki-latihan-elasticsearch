@@ -1,0 +1,53 @@
+POST _bulk
+{"action" : {"_index" : "{index_name}", "_id" : "{document id}"}}
+{"field1" : "value1"} //if action is index or update
+{"action" : {"_index" : "{index_name}", "_id" : "{document id}"}}
+{"field1" : "value1"} //if action is index or update
+{"action" : {"_index" : "{index_name}", "_id" : "{document id}"}}
+{"field1" : "value1"} //if action is index or update
+{"action" : {"_index" : "{index_name}", "_id" : "{document id}"}}
+{"field1" : "value1"} //if action is index or update
+
+
+// convert single post/put body to _bulk format
+{
+    "title" : "indroduction to elastichsearch",
+    "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+    "published_date" : "2020-01-02",
+    "tags" : ["elasticsearch","distributed","storage"]
+}
+{
+    "title" : "indroduction the new React Devtools",
+    "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", 
+    "published_date" : "2019-08-25", 
+    "tags" : ["react", "devtools"]
+}
+
+
+
+
+POST _bulk
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "1"}}
+{ "title" : "Introduction to elassticsearch", 
+"content" : "Elasticsearch is a distributed, open source search and analytics enginer for all types of data", 
+"published_date" : "2020-01-02", 
+"tags" : ["elasticsearch", "distributed", "storage"]}
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "2"}}
+{ "title" : "Introduction to New React DevTools", 
+"content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", 
+"published_date" : "2019-08-25", 
+"tags" : ["react", "devtools"]}
+{"update" : {"_id": "1", "_index" : "blogposts_belajar_bulk"}}
+{"doc" : {"title" : "Overview of elasticsearch"}}
+{"delete" : {"_index": "blogposts_belajar_bulk", "_id" : "2" }}
+
+
+
+POST _bulk
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "1"}}
+{ "title" : "indroduction to elastichsearch", "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .", "published_date" : "2020-01-02","tags" : ["elasticsearch","distributed","storage"]}
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "2"}}
+{ "title" : "indroduction the new React Devtools", "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", "published_date" : "2019-08-25", "tags" : ["react", "devtools"]}
+{"update" : {"_id": "1", "_index" : "blogposts_belajar_bulk"}}
+{"doc" : {"title" : "Overview of elasticsearch"}}
+{"delete" : {"_index": "blogposts_belajar_bulk", "_id" : "2" }}

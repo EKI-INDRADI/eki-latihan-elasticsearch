@@ -1,0 +1,501 @@
+ssh crypt@192.168.100.43 -p 22
+
+
+apt-get install openssh-client
+apt-get install openssh-server
+apt-get install openssh-sftp-server
+apt-get install nano
+
+apt-get update
+apt-get install default-jdk  (ubuntu 1804 defaultnya java 11)
+
+sudo useradd -m esuser << bkin account + home dir
+sudo usermod -s /bin/bash esuser  << biar bs login
+usermod -a -Gsudo esuser  << enable root
+sudo passwd esuser << ubah pass
+masuk123
+
+
+//============ install elasticsearch=========================================================
+
+
+
+
+nano ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export PATH_JAVA_HOME=$PATH_JAVA_HOME:$JAVA_HOME/bin
+
+export ES_HOME=/home/esuser/ES_7.1.1_node1
+export PATH_ES=$PATH_ES:$ES_HOME/bin
+
+
+ex run: 
+di terminal :
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+$ES_HOME/bin/elasticsearch -d 
+netstat -plnt
+curl localhost:9200
+curl 192.168.100.43:9200
+pkill -f elasticsearch
+
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-linux-x86_64.tar.gz
+tar -xzvf elasticsearch-7.1.1-linux-x86_64.tar.gz
+
+mv elasticsearch-7.1.1 ES_7.1.1_node1
+
+
+cp -avr /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml-origin
+cp -avr /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml-0.0.0.0-ok /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml
+
+nano /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml
+cluster.initial_master_nodes: ["node-1"]
+
+
+
+edit config
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+/home/esuser/ES_7.1.1_node1/bin/elasticsearch
+
+http://192.168.100.43:9201/
+http://192.168.100.43:9201/_cat/nodes
+http://192.168.100.43:9201/_cluster/state?pretty
+http://192.168.100.43:9201/_cat/nodes?v
+http://192.168.100.43:9201/_cat/shards?v
+http://192.168.100.43:9201/_cat/indices?v
+http://192.168.100.43:9201/_cluster/health
+
+
+
+
+ip             heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+192.168.100.43           13          97   5    0.98    0.78     0.43 mdi       *      node-2
+192.168.100.43           17          97   4    0.98    0.78     0.43 mdi       -      node-3
+192.168.100.43           17          97   4    0.98    0.78     0.43 mdi       -      node-1
+
+cp -avr ./ES_7.1.1_node1/config/elasticsearch.yml ./ES_7.1.1_node1/config/elasticsearch.yml-localhost-ok
+cp -avr /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml-0.0.0.0-ok
+nano /home/esuser/ES_7.1.1_node1/config/elasticsearch.yml 
+
+
+
+//=============== / programmer zaman now
+
+
+//==============  KIBANA DONE ============== 
+
+
+//================ hapus kibana
+DELETE /my-index-000001
+
+http://192.168.100.43:9201/_cat/shards?v
+kibana_sample_data_flights
+.kibana_1 
+
+DELETE http://192.168.100.43:9201/.kibana_1
+DELETE http://192.168.100.43:9201/kibana_sample_data_flights
+
+http://192.168.100.43:5601/app/kibana#/home/tutorial_directory/sampleData?_g=()  (pilih template ulang)
+//================ hapus kibana
+
+
+curl -L -o kibana-7.1.1-linux-x86_64.tar.gz https://artifacts.elastic.co/downloads/kibana/kibana-7.1.1-linux-x86_64.tar.gz
+tar -xvzf kibana-7.1.1-linux-x86_64.tar.gz
+
+
+mv /home/esuser/kibana-7.1.1-linux-x86_64 /home/esuser/kibana-7.1.1
+cd  /home/esuser/kibana-7.1.1
+
+
+cp -avr /home/esuser/kibana-7.1.1/config/kibana.yml /home/esuser/kibana-7.1.1/config/kibana.yml-backup
+nano /home/esuser/kibana-7.1.1/config/kibana.yml
+
+
+server.port: 5601
+server.host: "0.0.0.0"
+server.name: "eki-cluster"
+elasticsearch.hosts: ["http://localhost:9201"]
+
+
+run kibana
+/home/esuser/kibana-7.1.1/bin/kibana
+
+http://192.168.100.43:5601/app/kibana#/home
+http://192.168.100.43:5601/app/kibana#/home/tutorial_directory/sampleData?_g=()
+
+[2021-01-29T09:07:50,599][INFO ][o.e.c.m.MetaDataMappingService] [node-1] [.kibana_1/633AX0bFSfWI6GD6CgwRKg] update_mapping [_doc]
+[2021-01-29T09:07:50,968][INFO ][o.e.c.m.MetaDataMappingService] [node-1] [.kibana_1/633AX0bFSfWI6GD6CgwRKg] update_mapping [_doc]
+[2021-01-29T09:07:51,396][INFO ][o.e.c.m.MetaDataMappingService] [node-1] [.kibana_1/633AX0bFSfWI6GD6CgwRKg] update_mapping [_doc]
+[2021-01-29T09:07:51,694][INFO ][o.e.c.m.MetaDataMappingService] [node-1] [.kibana_1/633AX0bFSfWI6GD6CgwRKg] update_mapping [_doc]
+[2021-01-29T09:07:51,952][INFO ][o.e.c.m.MetaDataMappingService] [node-1] [.kibana_1/633AX0bFSfWI6GD6CgwRKg] update_mapping [_doc]
+[2021-01-29T09:07:53,190][INFO ][o.e.c.m.MetaDataMappingService] [node-1] [.kibana_1/633AX0bFSfWI6GD6CgwRKg] update_mapping [_doc]
+[2021-01-29T09:33:12,266][INFO ][o.e.c.m.MetaDataIndexTemplateService] [node-1] adding template [.management-beats] for index patterns [.management-beats]
+
+//==============  / KIBANA DONE ============== 
+
+
+
+
+//==============  filebeat ============== 
+https://www.elastic.co/guide/en/beats/filebeat/7.1/configuring-howto-filebeat.html
+
+via deb
+https://www.elastic.co/downloads/elasticsearch
+
+
+//==============  / filebeat ============== 
+
+
+
+
+
+//==============  LOGSTASH ============== 
+
+
+
+//==============  / LOGSTASH ============== 
+
+
+
+
+
+//============== NEXT RND LIAD CONFIG DARI DEB FILE ===============
+https://logz.io/blog/configure-yaml-files-elk-stack/
+
+/etc/elasticsearch/elasticsearch.yml
+/etc/kibana/kibana.yml
+/etc/filebeat/filebeat.yml
+/etc/metricbeat/metricbeat.yml
+
+
+&
+
+
+https://phoenixnap.com/kb/how-to-install-elk-stack-on-ubuntu
+https://www.digitalocean.com/community/tutorials/how-to-install-elasticsearch-logstash-and-kibana-elastic-stack-on-ubuntu-18-04
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//=============== filebeat =============== 
+
+
+https://phoenixnap.com/kb/how-to-install-elk-stack-on-ubuntu
+
+https://www.elastic.co/guide/en/beats/filebeat/7.x/filebeat-installation-configuration.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.codepolitan.com/tutorial-instal-centralize-log-manajemen-server-menggunakan-elasticsearch-logstash-amp-kibana-di-centos-7-59ff2fb9ce0b4
+
+
+
+https://www.tecmint.com/install-elasticsearch-logstash-and-kibana-elk-stack-on-centos-rhel-7/
+
+
+
+
+
+
+Logtash = log Elasticsearch
+Kibana = monitoring Elasticsearch
+
+
+
+https://github.com/BonnierNews/logstash_exporter
+
+https://grafana.com/grafana/dashboards/2525
+
+
+LOGTASH 7.1.1
+
+curl -L -o logstash-7.1.1.zip https://artifacts.elastic.co/downloads/logstash/logstash-7.1.1.zip
+
+apt-get install zip unzip
+
+unzip logstash-7.1.1.zip
+
+
+https://www.elastic.co/guide/en/logstash/current/configuration.html
+https://www.elastic.co/guide/en/logstash/7.1/configuration.html
+
+
+cp -avr /home/esuser/logstash-7.1.1/config/logstash-sample.conf /home/esuser/logstash-7.1.1/config/logstash-sample.conf-origin
+
+
+nano /home/esuser/logstash-7.1.1/config/logstash-sample.conf 
+
+
+
+
+# Sample Logstash configuration for creating a simple
+# Beats -> Logstash -> Elasticsearch pipeline.
+
+#https://www.elastic.co/guide/en/logstash/7.1/configuration.html
+
+input {
+  beats {
+   # port => 5044
+     port => 5101
+
+  }
+  stdin { }
+}
+
+output {
+  elasticsearch {
+    hosts => ["http://localhost:9201"]
+    #index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+    #user => "elastic"
+    #password => "changeme"
+  }
+  stdout { codec => rubydebug }
+
+}
+
+
+
+
+
+
+
+
+
+https://www.elastic.co/guide/en/logstash/7.1/configuration.html
+
+run logtash
+
+cp -avr /home/esuser/logstash-7.1.1/config/logstash-sample.conf  /home/esuser/logstash-7.1.1/bin/logstash-sample.conf 
+
+/home/esuser/logstash-7.1.1/bin/logstash -f logstash-simple.conf
+
+https://stackoverflow.com/questions/62394540/logstash-no-config-files-found-in-path (kafka)
+
+
+
+
+simple  example :
+
+input {
+Stdin{ }
+
+output {
+elasticsearch { hosts => [ "local host:9200"] }
+stdout { }
+}
+
+https://discuss.elastic.co/t/logstash-config-unable-to-load/121392/2
+
+
+
+
+
+/home/esuser/logstash-7.1.1/bin/logstash -f logstash-simple.conf
+nano /home/esuser/logstash-7.1.1/config/logstash-sample.conf 
+
+
+# Sample Logstash configuration for creating a simple
+# Beats -> Logstash -> Elasticsearch pipeline.
+
+#https://www.elastic.co/guide/en/logstash/7.1/configuration.html
+
+input {
+  stdin { }
+}
+
+output {
+  elasticsearch {
+    hosts => ["http://localhost:9201"]
+  }
+  stdout { }
+}
+
+
+/home/esuser/logstash-7.1.1/bin/logstash -f logstash-simple.conf  --debug
+
+./bin/logstash -f logstash-simple.conf --debug
+
+//===============================================================
+esuser@srv-u1804-es-single:~/logstash-7.1.1/bin$ /home/esuser/logstash-7.1.1/bin/logstash -f logstash-simple.conf
+OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.headius.backport9.modules.Modules (file:/home/esuser/logstash-7.1.1/logstash-core/lib/jars/jruby-complete-9.2.7.0.jar) to field java.io.FileDescriptor.fd
+WARNING: Please consider reporting this to the maintainers of com.headius.backport9.modules.Modules
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+Sending Logstash logs to /home/esuser/logstash-7.1.1/logs which is now configured via log4j2.properties
+[2021-01-29T10:11:59,711][WARN ][logstash.config.source.multilocal] Ignoring the 'pipelines.yml' file because modules or command line options are specified
+[2021-01-29T10:11:59,788][INFO ][logstash.runner          ] Starting Logstash {"logstash.version"=>"7.1.1"}
+[2021-01-29T10:12:03,389][INFO ][logstash.config.source.local.configpathloader] No config files found in path {:path=>"/home/esuser/logstash-7.1.1/bin/logstash-simple.conf"}
+[2021-01-29T10:12:03,455][ERROR][logstash.config.sourceloader] No configuration found in the configured sources.
+[2021-01-29T10:12:05,317][INFO ][logstash.agent           ] Successfully started Logstash API endpoint {:port=>9600}
+[2021-01-29T10:12:09,238][INFO ][logstash.runner          ] Logstash shut down.
+
+//===============================================================
+
+
+
+
+
+//================config beats dulu
+https://www.pointstar.co.id/id/elastic-search-and-logging/beats/#:~:text=Beats%20adalah%20pengirim%20data%20ringan,%2C%20atau%20data%20paket%20jaringan).
+
+Beats adalah pengirim data ringan, yang ditulis dalam Go, yang Anda instal di server Anda untuk menangkap semua jenis data operasional (pikirkan log, metrik, atau data paket jaringan). Beats mengirim data operasional ke Elasticsearch, baik secara langsung atau melalui Logstash, sehingga dapat divisualisasikan dengan Kibana.
+
+
+https://stackoverflow.com/questions/59622799/how-to-gather-logs-to-elasticsearch
+
+https://www.javainuse.com/elasticsearch/filebeat-elk
+
+https://www.elastic.co/downloads/beats/filebeat
+https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-installation-configuration.html
+https://www.elastic.co/guide/en/beats/filebeat/7.1/config-filebeat-logstash.html
+https://stackoverflow.com/questions/59622799/how-to-gather-logs-to-elasticsearch  (recomen)
+
+
+
+cd /home/DL_FILES && 
+curl -L -o filebeat-7.1.1-linux-x86_64.tar.gz https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.1.1-linux-x86_64.tar.gz
+tar -xvzf filebeat-7.1.1-linux-x86_64.tar.gz
+
+mv ./filebeat-7.1.1-linux-x86_64 ./filebeat-7.1.1_node1
+
+cp -avr /home/esuser/filebeat-7.1.1_node1/filebeat.yml  /home/esuser/filebeat-7.1.1_node1/filebeat.yml-origin
+
+
+https://www.elastic.co/guide/en/beats/filebeat/7.1/filebeat-starting.html
+
+
+mkdir -p /home/esuser/ELK_LOGS/filebeat_node1
+
+
+cat > /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log1.log
+cat > /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log2.log
+chmod 777 -Rv /home/esuser/ELK_LOGS
+ls /home/esuser/ELK_LOGS/filebeat_node1
+
+
+nano /home/esuser/filebeat-7.1.1_node1/filebeat.yml
+
+#enabled: false
+enabled: true
+
+
+  paths:
+    - /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log1.log
+    - /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log2.log
+
+
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["localhost:9201"]
+
+output.logstash:
+  # The Logstash hosts
+  hosts: ["localhost:5101"]
+
+
+
+
+run
+/home/esuser/logstash-7.1.1/bin/logstash -f /home/esuser/logstash-7.1.1/config/logstash-simple.conf
+/home/esuser/filebeat-7.1.1_node1/filebeat -e
+
+
+
+
+
+
+//================ / config beats dulu
+
+edit config
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+
+
+/home/esuser/ES_7.1.1_node1/bin/elasticsearch
+http://192.168.100.37:9201/
+http://192.168.100.37:9201/_cat/nodes
+http://192.168.100.37:9201/_cluster/state?pretty
+/home/esuser/ES_7.1.1_node2/bin/elasticsearch
+/home/esuser/ES_7.1.1_node3/bin/elasticsearch
+
+
+chmod 777 -Rv /home/esuser/logstash-7.1.1
+mkdir /home/esuser/logstash-7.1.1/logs
+
+
+/home/esuser/logstash-7.1.1/bin/logstash -f /home/esuser/logstash-7.1.1/config/logstash-simple.conf
+
+
+https://devconnected.com/how-to-install-logstash-on-ubuntu-18-04-and-debian-9/
+
+
+
+
+
+
+
+
+
+
+

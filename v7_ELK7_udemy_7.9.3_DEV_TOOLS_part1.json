@@ -1,0 +1,81 @@
+PUT /blogsposts/_doc/1
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+GET /blogsposts/_doc/1
+
+HEAD /blogsposts/_doc/1
+
+HEAD /blogsposts/_doc/15
+
+POST /blogsposts/_doc/
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+GET /blogsposts/_doc/f0QAYXcByloy1LqeOZy1
+
+
+PUT /blogsposts/_doc/1
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+
+
+
+POST /blogsposts/_update/1
+{
+  "doc" : { "title" : "Elasticsearch indroduction",
+            "no_of_likes" : 2}
+}
+
+
+PUT /blogsposts/_doc/2
+{
+"title" : "indroduction",
+"content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .",
+"published_date" : "2020-01-02",
+"tags" : ["elasticsearch","distributed","storage"]
+}
+
+
+DELETE /blogsposts/_doc/2
+
+PUT /blogsposts2
+
+DELETE /blogsposts2
+
+
+
+PUT /blogposts_belajar_bulk
+
+GET /blogposts_belajar_bulk 
+
+GET /blogposts_belajar_bulk/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+POST _bulk
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "1"}}
+{ "title" : "indroduction to elastichsearch", "content" : "Elasticsearch is a distributed, open source search and analytics engine for all types of data . . .", "published_date" : "2020-01-02","tags" : ["elasticsearch","distributed","storage"]}
+{ "index" : {"_index" : "blogposts_belajar_bulk", "_id": "2"}}
+{ "title" : "indroduction the new React Devtools", "content" : "we are excited to announce a new release of the React Developer Tools, available today in Chrome, Firefox, and (Chrimium) Edge", "published_date" : "2019-08-25", "tags" : ["react", "devtools"]}
+{"update" : {"_id": "1", "_index" : "blogposts_belajar_bulk"}}
+{"doc" : {"title" : "Overview of elasticsearch"}}
+{"delete" : {"_index": "blogposts_belajar_bulk", "_id" : "2" }}
+

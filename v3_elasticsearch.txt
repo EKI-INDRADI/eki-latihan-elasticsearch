@@ -1,0 +1,348 @@
+
+http client
+- postman
+
+
+===============
+put <nama_url_index>
+
+- harus huruf kecil
+- ga boleh mengandung karakter
+- ga boleh ada :
+- ga boleh di mulai pake - atau _ kalo di tengah2 boleh
+- ga bole pake titik
+- maximal 255 byte
+
+
+
+
+(kondisi menggunakan cluster)
+ketika menambahkan index bebas 192.168.100.37:9201 boleh 192.168.100.37:9202 boleh 192.168.100.37:9203 boleh jg
+
+simplenya gini tapi nanti default shard dan replicate nya akan default 1
+PUT http://192.168.100.37:9201/belajar_elasticsearch
+
+
+https://www.elastic.co/guide/en/elasticsearch/reference/7.1/indices-create-index.html
+
+untuk cara set number shard dan replicas nya :
+PUT http://192.168.100.37:9201/belajar_elasticsearch
+{
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 2
+    }
+}
+
+jika berhasil
+
+{
+    "acknowledged": true,
+    "shards_acknowledged": true,
+    "index": "belajar_elasticsearch"
+}
+
+
+
+untuk melihat hasilnya  maka dapat di lihat di semua cluster
+GET http://192.168.100.37:9201/belajar_elasticsearch
+GET http://192.168.100.37:9202/belajar_elasticsearch
+GET http://192.168.100.37:9203/belajar_elasticsearch
+
+atau di browser
+http://192.168.100.37:9201/belajar_elasticsearch
+http://192.168.100.37:9202/belajar_elasticsearch
+http://192.168.100.37:9203/belajar_elasticsearch
+
+
+
+
+akan muncul result, jika tidak ada index not found
+
+
+melihat list cluster
+========= index
+http://192.168.100.37:9201/_cat
+http://192.168.100.37:9201/_cat/indices
+green open belajar_elasticsearch KU9wHrpXSdWg27P_ZSZ5UQ 5 2 0 0 4.1kb 1.3kb
+
+green = health
+open = artinya dapat di insert / dml
+
+
+
+http://192.168.100.37:9201/_cat/indices?v
+
+health status index                 uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   belajar_elasticsearch KU9wHrpXSdWg27P_ZSZ5UQ   5   2          0            0      4.1kb          1.3kb
+
+pri = partisi
+rep = replikasi
+========= / index
+
+========= shards
+http://192.168.100.37:9201/_cat/shards?v
+
+index                 shard prirep state   docs store ip             node
+belajar_elasticsearch 2     r      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 2     r      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 2     p      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 1     r      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 1     p      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 1     r      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 3     p      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 3     r      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 3     r      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 4     r      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 4     p      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 4     r      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 0     p      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 0     r      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 0     r      STARTED    0  283b 192.168.100.37 node-3
+
+
+artinya ada (di karenakan sblmnya di set replicate = 2)
+5 sharing (partisi) 
+3 node    
+10 partisi replicate (all)
+
+
+setiap partisi memiliki replicate dan primary secara random
+
+
+contoh lg
+PUT http://192.168.100.37:9201/belajar
+{
+    "settings" : {
+        "number_of_shards" : 3,
+        "number_of_replicas" : 1
+    }
+}
+
+result
+{
+    "acknowledged": true,
+    "shards_acknowledged": true,
+    "index": "belajar"
+}
+
+
+hasilnya
+
+http://192.168.100.37:9201/_cat/shards?v
+
+index                 shard prirep state   docs store ip             node
+belajar_elasticsearch 2     r      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 2     r      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 2     p      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 1     r      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 1     p      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 1     r      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 3     p      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 3     r      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 3     r      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 4     r      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 4     p      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 4     r      STARTED    0  283b 192.168.100.37 node-3
+belajar_elasticsearch 0     p      STARTED    0  283b 192.168.100.37 node-2
+belajar_elasticsearch 0     r      STARTED    0  283b 192.168.100.37 node-1
+belajar_elasticsearch 0     r      STARTED    0  283b 192.168.100.37 node-3
+belajar               2     r      STARTED    0  230b 192.168.100.37 node-2
+belajar               2     p      STARTED    0  230b 192.168.100.37 node-3
+belajar               1     p      STARTED    0  230b 192.168.100.37 node-1
+belajar               1     r      STARTED    0  230b 192.168.100.37 node-3
+belajar               0     p      STARTED    0  230b 192.168.100.37 node-2
+belajar               0     r      STARTED    0  230b 192.168.100.37 node-1
+
+
+
+
+
+
+========= /shards
+
+
+========= insert/update data
+
+https://www.elastic.co/guide/en/elasticsearch/reference/7.1/docs-index_.html
+
+
+
+jika belum ada insert
+jika sudah ada update ( jika update version pada  GET http://192.168.100.37:9201/belajar/_doc/1  , akan berubah susai jumlah perubahan -1 ), 
+sifatnya delete data id yg di set, trs inser data baru dengan id yg di set
+
+TIPE DATA HARUS KONSISTEN kalo string ya string seterusnya diinput jangan di rubah int akan error
+PUT http://192.168.100.37:9201/belajar/_doc/1
+{
+	"frist_name" : "Eki",
+	"last_name" :  "indradi",
+	"address" : {"country" : "Indonesia",
+		         "city" : "Jakarta"},
+	"hoby" : ["game", "coding", "server", "network", "data", "traveling"]
+}
+
+
+
+
+resultnya :
+{
+    "_index": "belajar",
+    "_type": "_doc",
+    "_id": "1",
+    "_version": 1,
+    "result": "created",
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "failed": 0
+    },
+    "_seq_no": 0,
+    "_primary_term": 1
+}
+
+--
+
+PUT http://192.168.100.37:9201/belajar/_doc/2
+{
+	"frist_name" : "ara",
+	"last_name" :  "aulia",
+	"address" : {"country" : "Indonesia",
+		         "city" : "Cirebon"},
+	"hoby" : ["game", "coding", "server", "network", "data", "traveling"]
+}
+
+--
+
+PUT http://192.168.100.37:9201/belajar/_doc/3
+{
+	"frist_name" : "Eki3",
+	"last_name" :  "Indradi3",
+	"address" : {"country" : "Indonesia",
+		         "city" : "Bandung"},
+	"hoby" : ["game", "coding", "server", "network", "data", "traveling"]
+}
+
+--
+
+PUT http://192.168.100.37:9201/belajar/_doc/4
+{
+	"frist_name" : "Eki4",
+	"last_name" :  "Indradi4",
+	"address" : {"country" : "Indonesia",
+		         "city" : "Cirebon"},
+	"hoby" : ["game", "coding", "server", "network", "data", "traveling"]
+}
+
+
+
+
+http://192.168.100.37:9201/_cat/shards?v
+
+
+
+
+
+
+==== update
+
+jika sudah ada update ( jika update version pada  GET http://192.168.100.37:9201/belajar/_doc/1  , akan berubah susai jumlah perubahan -1 )
+sifatnya delete data id yg di set, trs inser data baru dengan id yg di set
+
+nah jika yg di update 
+
+
+PUT http://192.168.100.37:9201/belajar/_doc/4
+{
+	"frist_name" : "Eki4",
+	"last_name" :  "Indradi4",
+	"address" : {"country" : "Indonesia",
+		         "city" : "Cirebon"},
+	"hoby" : ["game", "coding", "server", "network", "data", "traveling"]
+}
+
+
+
+
+trs di update menjadi
+
+PUT http://192.168.100.37:9201/belajar/_doc/4
+{
+	"frist_name" : "Eki4",
+	"last_name" :  "Indradi4",
+}
+
+
+data
+"address" : {"country" : "Indonesia",
+		         "city" : "Cirebon"},
+	"hoby" : ["game", "coding", "server", "network", "data", "traveling"]
+
+
+akan menghilang menjadi
+
+{
+	"frist_name" : "Eki4",
+	"last_name" :  "Indradi4",
+}
+
+saja
+
+
+sifat update elastic search itu harus update ga bs 1-1 melainkan hrs update dr keseluruhan json nya
+
+
+
+
+==== delete
+
+https://www.elastic.co/guide/en/elasticsearch/reference/7.1/docs-delete.html
+
+PUT http://192.168.100.37:9201/belajar/_doc/5
+{
+	"frist_name" : "Eki5",
+	"last_name" :  "Indradi5",
+}
+
+
+PUT http://192.168.100.37:9201/belajar/_doc/6
+{
+	"frist_name" : "Eki6",
+	"last_name" :  "Indradi6",
+}
+
+
+DELETE http://192.168.100.37:9201/belajar/_doc/5
+
+{
+    "_index": "belajar",
+    "_type": "_doc",
+    "_id": "5",
+    "_version": 3,
+    "result": "deleted",
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "failed": 0
+    },
+    "_seq_no": 2,
+    "_primary_term": 1
+}
+
+DELETE http://192.168.100.37:9201/belajar/_doc/6
+{
+    "_index": "belajar",
+    "_type": "_doc",
+    "_id": "6",
+    "_version": 2,
+    "result": "deleted",
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "failed": 0
+    },
+    "_seq_no": 4,
+    "_primary_term": 1
+}
+
+http://192.168.100.37:9201/_cat/indices?v

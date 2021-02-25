@@ -1,0 +1,145 @@
+https://www.codepolitan.com/tutorial-instal-centralize-log-manajemen-server-menggunakan-elasticsearch-logstash-amp-kibana-di-centos-7-59ff2fb9ce0b4
+
+
+
+https://www.tecmint.com/install-elasticsearch-logstash-and-kibana-elk-stack-on-centos-rhel-7/
+
+
+
+
+
+
+Logtash = log Elasticsearch
+Kibana = monitoring Elasticsearch
+
+
+
+https://github.com/BonnierNews/logstash_exporter
+
+https://grafana.com/grafana/dashboards/2525
+
+
+LOGTASH 7.1.1
+
+cd /home/DL_FILES && 
+curl -L -o logstash-7.1.1.zip https://artifacts.elastic.co/downloads/logstash/logstash-7.1.1.zip
+
+apt-get install zip unzip
+
+unzip logstash-7.1.1.zip
+
+
+https://www.elastic.co/guide/en/logstash/current/configuration.html
+https://www.elastic.co/guide/en/logstash/7.1/configuration.html
+
+
+cp -avr /home/esuser/logstash-7.1.1/config/logstash-sample.conf /home/esuser/logstash-7.1.1/config/logstash-sample.conf-origin
+
+
+nano /home/esuser/logstash-7.1.1/config/logstash-sample.conf 
+
+
+
+run logtash
+
+/home/esuser/logstash-7.1.1/bin/logstash -f logstash-simple.conf
+
+
+
+//================config beats dulu
+https://www.pointstar.co.id/id/elastic-search-and-logging/beats/#:~:text=Beats%20adalah%20pengirim%20data%20ringan,%2C%20atau%20data%20paket%20jaringan).
+
+Beats adalah pengirim data ringan, yang ditulis dalam Go, yang Anda instal di server Anda untuk menangkap semua jenis data operasional (pikirkan log, metrik, atau data paket jaringan). Beats mengirim data operasional ke Elasticsearch, baik secara langsung atau melalui Logstash, sehingga dapat divisualisasikan dengan Kibana.
+
+
+https://stackoverflow.com/questions/59622799/how-to-gather-logs-to-elasticsearch
+
+https://www.javainuse.com/elasticsearch/filebeat-elk
+
+https://www.elastic.co/downloads/beats/filebeat
+https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-installation-configuration.html
+https://www.elastic.co/guide/en/beats/filebeat/7.1/config-filebeat-logstash.html
+https://stackoverflow.com/questions/59622799/how-to-gather-logs-to-elasticsearch  (recomen)
+
+
+
+cd /home/DL_FILES && 
+curl -L -o filebeat-7.1.1-linux-x86_64.tar.gz https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.1.1-linux-x86_64.tar.gz
+tar -xvzf filebeat-7.1.1-linux-x86_64.tar.gz
+
+mv ./filebeat-7.1.1-linux-x86_64 ./filebeat-7.1.1
+
+mv ./filebeat-7.1.1 ./filebeat-7.1.1_node1
+
+cp -avr /home/esuser/filebeat-7.1.1_node1/filebeat.yml  /home/esuser/filebeat-7.1.1_node1/filebeat.yml-origin
+
+nano /home/esuser/filebeat-7.1.1_node1/filebeat.yml
+
+
+https://www.elastic.co/guide/en/beats/filebeat/7.1/filebeat-starting.html
+
+
+mkdir -p /home/esuser/ELK_LOGS/filebeat_node1
+mkdir -p /home/esuser/ELK_LOGS/filebeat_node2
+mkdir -p /home/esuser/ELK_LOGS/filebeat_node3
+
+
+
+cat > /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log1.log
+cat > /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log2.log
+
+ls /home/esuser/ELK_LOGS/filebeat_node1
+
+nano /home/esuser/filebeat-7.1.1_node1/filebeat.yml
+
+
+  paths:
+    - /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log1.log
+    - /home/esuser/ELK_LOGS/filebeat_node1/filebeat_node1_log2.log
+
+
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["localhost:9201"]
+
+output.logstash:
+  # The Logstash hosts
+  hosts: ["localhost:5101"]
+
+
+
+
+run
+/home/esuser/filebeat-7.1.1_node1/filebeat -e
+
+
+
+
+
+
+//================ / config beats dulu
+
+edit config
+sudo -i
+sysctl -w vm.max_map_count=262144
+exit
+su esuser
+
+
+
+/home/esuser/ES_7.1.1_node1/bin/elasticsearch
+http://192.168.100.37:9201/
+http://192.168.100.37:9201/_cat/nodes
+http://192.168.100.37:9201/_cluster/state?pretty
+/home/esuser/ES_7.1.1_node2/bin/elasticsearch
+/home/esuser/ES_7.1.1_node3/bin/elasticsearch
+
+
+chmod 777 -Rv /home/esuser/logstash-7.1.1
+mkdir /home/esuser/logstash-7.1.1/logs
+
+
+/home/esuser/logstash-7.1.1/bin/logstash -f /home/esuser/logstash-7.1.1/config/logstash-simple.conf
+
+
+https://devconnected.com/how-to-install-logstash-on-ubuntu-18-04-and-debian-9/
